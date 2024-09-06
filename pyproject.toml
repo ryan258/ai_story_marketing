@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "ai-story-marketing"
+version = "0.1.0"
+description = "make a story any story"
+authors = ["ryan258 <ryanleejwebdev@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+Flask = "^3.0.3"
+fpdf = "^1.7.2"
+python-dotenv = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
