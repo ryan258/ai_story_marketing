@@ -1,5 +1,3 @@
-# File: ai_story_marketing/README.md
-
 # AI-Driven Story Creation and Marketing System
 
 This system takes a simple idea input and generates a comprehensive story and marketing package using a chain of AI agents.
@@ -33,25 +31,32 @@ ai_story_marketing/
 │   │   └── app.py
 │   └── utils/
 │       ├── __init__.py
-│       ├── context_manager.py
-│       └── output_generator.py
+│       ├── output_generator.py
 └── tests/
-    └── __init__.py
+    ├── __init__.py
+    ├── test_evaluator.py
+    ├── test_marketing_expert.py
+    ├── test_marketing_team.py
+    ├── test_social_media_team.py
+    └── test_main.py
 ```
 
 ## Main Components
 
 1. **Agents**: Each agent (StoryWriter, Evaluator, MarketingExpert, SocialMediaTeam, MarketingTeam) inherits from BaseAgent and specializes in a specific task.
-   - Implemented (All agents are now functional)
+   - Implemented and tested
 
 2. **Models**: Interfaces for different AI models (GPT-4, Claude, Llama) that can be used by the agents.
+   - Basic LlamaModel implemented for demonstration
 
 3. **UI**: A Flask-based web interface for interacting with the system.
+   - Basic implementation complete
 
-4. **Utils**: Utility classes including ContextManager for maintaining context across agents and OutputGenerator for compiling the final output.
-   - Partially implemented (ContextManager functionality included in BaseAgent)
+4. **Utils**: OutputGenerator for compiling the final output.
+   - Implemented and tested
 
-5. **LlamaModel**: A simplified, educational version of an AI model for story generation.
+5. **Main Application**: Coordinates all agents and generates the final output.
+   - Implemented and tested
 
 ## Setup
 
@@ -75,21 +80,19 @@ ai_story_marketing/
 - To run tests: `poetry run pytest`
 - To run tests with verbose output: `poetry run pytest -v -s`
 - To add new dependencies: `poetry add <package-name>`
-- Tests implemented for all main components
 
 ## Main Features
 
 - Story Creation: Generates a simple story based on user input.
-- Story Evaluation: Provides a placeholder evaluation of the generated story.
-- Marketing Persona Creation: Creates placeholder target audience personas.
-- Social Media Content Generation: Generates placeholder content for various social media platforms.
-- Marketing Material Creation: Generates placeholder concepts for marketing campaigns.
+- Story Evaluation: Evaluates the generated story.
+- Marketing Analysis: Creates target audience personas.
+- Social Media Content Generation: Generates content for various social media platforms.
+- Marketing Concepts: Generates concepts for marketing campaigns.
 - Comprehensive Output: Compiles all generated content into a single JSON response.
 
 ## Educational Note
 
 This project uses a simplified version of an AI model (LlamaModel) for educational purposes. In a real-world scenario, we would integrate with actual machine learning models.
-
 
 ## Technology Stack
 
@@ -105,7 +108,7 @@ This project uses a simplified version of an AI model (LlamaModel) for education
 - Enhance the web interface with real-time updates
 - Add support for image generation in marketing materials
 - Implement user accounts and project saving functionality
-- Implement comprehensive error handling and logging
+- Implement PDF generation feature
 
 ## Contributing
 
