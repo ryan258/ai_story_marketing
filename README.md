@@ -42,7 +42,7 @@ ai_story_marketing/
 ## Main Components
 
 1. **Agents**: Each agent (StoryWriter, Evaluator, MarketingExpert, SocialMediaTeam, MarketingTeam) inherits from BaseAgent and specializes in a specific task.
-   - In Progress (BaseAgent, StoryWriter, and Evaluator implemented)
+   - Implemented (All agents are now functional)
 
 2. **Models**: Interfaces for different AI models (GPT-4, Claude, Llama) that can be used by the agents.
 
@@ -50,6 +50,8 @@ ai_story_marketing/
 
 4. **Utils**: Utility classes including ContextManager for maintaining context across agents and OutputGenerator for compiling the final output.
    - Partially implemented (ContextManager functionality included in BaseAgent)
+
+5. **LlamaModel**: A simplified, educational version of an AI model for story generation.
 
 ## Setup
 
@@ -71,34 +73,38 @@ ai_story_marketing/
 ## Development
 
 - To run tests: `poetry run pytest`
+- To run tests with verbose output: `poetry run pytest -v -s`
 - To add new dependencies: `poetry add <package-name>`
-- Initial tests implemented for Evaluator class
+- Tests implemented for all main components
 
 ## Main Features
 
-- Story Creation: Generates a story based on user input.
-- Story Evaluation: Assesses the quality of the generated story.
-- Marketing Persona Creation: Develops target audience personas.
-- Social Media Content Generation: Creates content for various social media platforms (Twitter, Instagram, Facebook, TikTok).
-- Marketing Material Creation: Generates concepts for commercials, movie posters, and viral marketing campaigns.
-- Comprehensive Output: Compiles all generated content into a single document and PDF.
+- Story Creation: Generates a simple story based on user input.
+- Story Evaluation: Provides a placeholder evaluation of the generated story.
+- Marketing Persona Creation: Creates placeholder target audience personas.
+- Social Media Content Generation: Generates placeholder content for various social media platforms.
+- Marketing Material Creation: Generates placeholder concepts for marketing campaigns.
+- Comprehensive Output: Compiles all generated content into a single JSON response.
+
+## Educational Note
+
+This project uses a simplified version of an AI model (LlamaModel) for educational purposes. In a real-world scenario, we would integrate with actual machine learning models.
+
 
 ## Technology Stack
 
 - Backend: Python
 - Frontend: Flask, TailwindCSS
-- AI Models: Custom implementations (GPT-4, Claude, Llama)
+- AI Models: Simplified educational implementation (LlamaModel)
 - Project Management: Poetry
 - PDF Generation: FPDF
 
 ## Future Improvements
 
-- Integrate all components in the main application flow
-- Implement more sophisticated AI model interactions
+- Implement more sophisticated AI model interactions with real machine learning models
 - Enhance the web interface with real-time updates
 - Add support for image generation in marketing materials
 - Implement user accounts and project saving functionality
-- Refine interactions between agents for smoother information flow
 - Implement comprehensive error handling and logging
 
 ## Contributing

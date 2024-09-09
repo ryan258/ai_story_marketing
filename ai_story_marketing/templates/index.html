@@ -1,0 +1,62 @@
+<!-- 📁 File: ai_story_marketing/ai_story_marketing/templates/index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 AI Story Marketing Creator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <h1 class="text-3xl font-bold mb-6 text-center">🎨 Story & Marketing Creator</h1>
+        
+        <!-- 📝 This is where users can submit their story ideas -->
+        <form id="story-form" class="mb-6">
+            <label for="idea" class="block mb-2 font-semibold">Your Story Idea:</label>
+            <textarea id="idea" name="idea" rows="4" class="w-full p-2 border rounded" required></textarea>
+            <button type="submit" class="mt-4 w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+                🚀 Create Story & Marketing Plan
+            </button>
+        </form>
+        
+        <!-- 📊 This is where we'll show the results -->
+        <div id="results" class="hidden">
+            <h2 class="text-2xl font-bold mb-4">📚 Your Story & Marketing Plan</h2>
+            <div id="story" class="mb-4"></div>
+            <div id="evaluation" class="mb-4"></div>
+            <div id="marketing-analysis" class="mb-4"></div>
+            <div id="social-media-content" class="mb-4"></div>
+            <div id="marketing-concepts" class="mb-4"></div>
+        </div>
+    </div>
+
+    <script>
+        // 🎭 This is where the magic happens when you submit your idea!
+        document.getElementById('story-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const idea = document.getElementById('idea').value;
+            
+            // 🚀 Send the idea to our AI agents
+            const response = await fetch('/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `idea=${encodeURIComponent(idea)}`
+            });
+            
+            const results = await response.json();
+            
+            // 📊 Show the results
+            document.getElementById('results').classList.remove('hidden');
+            document.getElementById('story').innerHTML = `<h3 class="font-bold">Story:</h3><p>${results.story}</p>`;
+            document.getElementById('evaluation').innerHTML = `<h3 class="font-bold">Evaluation:</h3><p>Score: ${results.evaluation.score}/10</p><p>${results.evaluation.feedback}</p>`;
+            document.getElementById('marketing-analysis').innerHTML = `<h3 class="font-bold">Marketing Analysis:</h3><p>Target Audience: ${results.marketing_analysis.target_audience}</p><p>Personas: ${results.marketing_analysis.personas.join(', ')}</p>`;
+            document.getElementById('social-media-content').innerHTML = `<h3 class="font-bold">Social Media Content:</h3><ul>${Object.entries(results.social_media_content).map(([platform, content]) => `<li><strong>${platform}:</strong> ${content}</li>`).join('')}</ul>`;
+            document.getElementById('marketing-concepts').innerHTML = `<h3 class="font-bold">Marketing Concepts:</h3><ul>${Object.entries(results.marketing_concepts).map(([material, concept]) => `<li><strong>${material}:</strong> ${concept}</li>`).join('')}</ul>`;
+        });
+    </script>
+</body>
+</html>

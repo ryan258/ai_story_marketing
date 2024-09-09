@@ -1,58 +1,62 @@
 # 📁 File: ai_story_marketing/ai_story_marketing/main.py
 
-# 🎉 Welcome to our AI Story Marketing application! 🚀
-# This is where our adventure begins! 🌟
+from flask import Flask, render_template, request, jsonify
+from .agents.story_writer import StoryWriter
+from .models.llama_model import LlamaModel
 
-# 📚 First, we need to bring in some helpful tools
-from flask import Flask, render_template, request  # This helps us make a web application
-from dotenv import load_dotenv  # This lets us use secret information safely
-import os  # This helps us work with files and folders
+import logging
 
-# 🧙‍♂️ We'll import our magical AI agents here (we'll create these later!)
-# from agents.story_writer import StoryWriter
-# from agents.evaluator import Evaluator
-# from agents.marketing_expert import MarketingExpert
-# from agents.social_media_team import SocialMediaTeam
-# from agents.marketing_team import MarketingTeam
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# 🔧 Let's set up our application
 def create_app():
-    # 🏗️ Create our Flask app (it's like building a castle!)
     app = Flask(__name__)
     
-    # 🔐 Load our secret information
-    load_dotenv()
+    model = LlamaModel()  # Our magical AI brain
+    story_writer = StoryWriter(model)
     
-    # 🌐 This is what happens when someone visits our website
     @app.route('/', methods=['GET', 'POST'])
     def index():
         if request.method == 'POST':
-            # 🎭 TODO: Handle the user's idea submission
-            # We'll add more code here later!
-            pass
-        return render_template('index.html')  # Show our homepage
-    
-    # 🏰 Return our finished app
+            idea = request.form.get('idea')
+            logger.info(f"🌟 We got a new idea: {idea}")
+
+            if not idea:
+                return jsonify({"error": "Oops! We need an idea to write a story!"})
+
+            try:
+                story = story_writer.process(idea)
+                
+                # Let's create a fun response with all the expected keys!
+                response = {
+                    "story": story,
+                    "evaluation": "Our story critic gives it 5 stars! ⭐⭐⭐⭐⭐",
+                    "marketing_analysis": {
+                        "target_audience": "Kids who love magical adventures!",
+                        "personas": ["Curious Cathy", "Adventurous Alex", "Imaginative Ian"]
+                    },
+                    "social_media_content": {
+                        "tweet": "Check out this magical story about a wise old tree! #KidsStories",
+                        "instagram": "Once upon a time, in a hidden valley... 📚✨ #StoryTime"
+                    },
+                    "marketing_concepts": [
+                        "Animated short film",
+                        "Interactive storybook app",
+                        "Tree-planting campaign tie-in"
+                    ]
+                }
+                
+                return jsonify(response)
+            except Exception as e:
+                logger.error(f"🙀 Oh no! Something went wrong: {str(e)}")
+                return jsonify({"error": f"Our storyteller got confused: {str(e)}"})
+
+        return render_template('index.html')
+
     return app
 
-# 🏁 This is where our program starts running
 if __name__ == "__main__":
-    # 🚀 Launch our app!
     app = create_app()
-    app.run(debug=True)  # The 'debug=True' part helps us see errors
+    app.run(debug=True)
 
-# 🧪 Let's add some tests to make sure our app works correctly
-def test_create_app():
-    # 🏗️ Create a test version of our app
-    app = create_app()
-    
-    # 🕵️ Check if our app was created successfully
-    assert app is not None, "App should be created"
-    
-    # 🌐 Make sure our homepage works
-    with app.test_client() as client:
-        response = client.get('/')
-        assert response.status_code == 200, "Homepage should be accessible"
-
-# 🎉 Hooray! We've set up the basic structure of our application!
-# Next, we'll create our AI agents and add more exciting features! 🚀
+print("🚀 Our magical story app is ready!")

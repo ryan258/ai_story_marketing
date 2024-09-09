@@ -1,82 +1,55 @@
 # 📁 File: ai_story_marketing/ai_story_marketing/agents/story_writer.py
 
-# 📚 Welcome to the StoryWriter agent! 🖋️
-# This magical agent will help us create amazing stories! 🧙‍♂️
+import logging
 
-from .base_agent import BaseAgent  # We're using the superhero costume we made earlier!
+# Set up our magical storytelling log 📜✨
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-class StoryWriter(BaseAgent):
+class StoryWriter:
     """
-    🖋️ This is our StoryWriter agent.
-    It's like a friendly robot that loves to write stories!
+    🧙‍♂️ Our magical StoryWriter! It turns ideas into amazing stories!
     """
 
     def __init__(self, model):
         """
-        🎭 This is where we set up our StoryWriter with its story-writing superpowers!
-        
-        Args:
-            model: The AI model that gives our StoryWriter its creativity
+        🎭 Getting our storyteller ready with a magical AI brain!
         """
-        super().__init__(model)  # We're using the setup from our BaseAgent
-        self.story = ""  # This is where we'll keep our story
+        self.model = model  # Our AI brain
+        self.story = ""     # Where we'll keep our story
 
     def process(self, idea):
         """
-        📝 This is where the magic happens! Our StoryWriter takes an idea and turns it into a story.
-        
-        Args:
-            idea (str): The main idea or prompt for our story
-        
-        Returns:
-            str: The completed story
+        📝 This is where the magic happens! We turn an idea into a story!
         """
-        # Let's create a prompt for our AI to write the story
-        prompt = self.format_prompt(
-            "Write a short story based on this idea: {idea}. "
-            "The story should have a beginning, middle, and end. "
-            "Make it exciting and fun to read!",
-            idea=idea
-        )
-        
+        logger.info(f"🌟 Starting to write a story about: {idea}")
+
         # Now, let's ask our AI to write the story
-        self.story = self.generate_text(prompt)
+        response = self.model.generate(idea)
         
-        # Let's remember this story in our magical backpack (context)
-        self.update_context({"latest_story": self.story})
-        
+        # 🕵️‍♂️ Let's check if our AI gave us a good story
+        if not response:
+            logger.info("😴 Our Llama AI is taking a nap!")
+            return "Our storyteller is taking a nap. Try again later!"
+
+        # Yay! We got a story!
+        self.story = response.strip()
+        logger.info(f"✨ Wow! We created a story with {len(self.story)} characters!")
         return self.story
 
     def get_story(self):
         """
-        📖 This lets us read the story our StoryWriter has created.
-        
-        Returns:
-            str: The current story
+        📖 This lets us read the story we created
         """
         return self.story
 
-# 🧪 Let's add some tests to make sure our StoryWriter works correctly
-def test_story_writer():
-    # 🤖 Create a pretend AI model for testing
-    class DummyModel:
-        def generate(self, prompt):
-            return f"Once upon a time... {prompt}"
+# Let's test our StoryWriter!
+if __name__ == "__main__":
+    from ..models.llama_model import LlamaModel
     
-    # 🦸‍♂️ Create our StoryWriter agent
-    writer = StoryWriter(DummyModel())
+    writer = StoryWriter(LlamaModel())
+    for _ in range(5):  # Let's try 5 times
+        story = writer.process("a magical adventure")
+        print(f"🎉 Our story: {story}")
     
-    # 📝 Test writing a story
-    idea = "a brave little mouse"
-    story = writer.process(idea)
-    assert "Once upon a time" in story, "Story should start with 'Once upon a time'"
-    assert "brave little mouse" in story, "Story should include the original idea"
-    
-    # 📚 Test getting the story
-    assert writer.get_story() == story, "get_story should return the latest story"
-    
-    # 🧠 Test that the story is saved in the context
-    assert writer.get_context()["latest_story"] == story, "Story should be saved in context"
-
-# 🎉 Hooray! We've created our StoryWriter agent!
-# Now we can create amazing stories with the power of AI! 🚀
+    print("🎊 Yay! Our StoryWriter works with our Llama AI!")
