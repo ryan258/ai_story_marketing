@@ -10,6 +10,7 @@ python = "^3.11"
 Flask = "^3.0.3"
 fpdf = "^1.7.2"
 python-dotenv = "^1.0.1"
+pytest = "^8.3.2"
 
 
 [build-system]
