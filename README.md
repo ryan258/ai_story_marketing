@@ -42,12 +42,14 @@ ai_story_marketing/
 ## Main Components
 
 1. **Agents**: Each agent (StoryWriter, Evaluator, MarketingExpert, SocialMediaTeam, MarketingTeam) inherits from BaseAgent and specializes in a specific task.
+   - In Progress (BaseAgent, StoryWriter, and Evaluator implemented)
 
 2. **Models**: Interfaces for different AI models (GPT-4, Claude, Llama) that can be used by the agents.
 
 3. **UI**: A Flask-based web interface for interacting with the system.
 
 4. **Utils**: Utility classes including ContextManager for maintaining context across agents and OutputGenerator for compiling the final output.
+   - Partially implemented (ContextManager functionality included in BaseAgent)
 
 ## Setup
 
@@ -70,6 +72,7 @@ ai_story_marketing/
 
 - To run tests: `poetry run pytest`
 - To add new dependencies: `poetry add <package-name>`
+- Initial tests implemented for Evaluator class
 
 ## Main Features
 
@@ -90,6 +93,9 @@ ai_story_marketing/
 
 ## Future Improvements
 
+- Implement remaining agent classes (MarketingExpert, SocialMediaTeam, MarketingTeam)
+- Develop comprehensive test suite for all components
+- Integrate all components in the main application flow
 - Implement more sophisticated AI model interactions
 - Enhance the web interface with real-time updates
 - Add support for image generation in marketing materials
