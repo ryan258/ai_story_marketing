@@ -79,8 +79,8 @@ ai_story_marketing/
 - Story Creation: Generates a story based on user input.
 - Story Evaluation: Assesses the quality of the generated story.
 - Marketing Persona Creation: Develops target audience personas.
-- Social Media Content Generation: Creates content for various social media platforms.
-- Marketing Material Creation: Generates concepts for commercials, movie posters, etc.
+- Social Media Content Generation: Creates content for various social media platforms (Twitter, Instagram, Facebook, TikTok).
+- Marketing Material Creation: Generates concepts for commercials, movie posters, and viral marketing campaigns.
 - Comprehensive Output: Compiles all generated content into a single document and PDF.
 
 ## Technology Stack
@@ -93,13 +93,13 @@ ai_story_marketing/
 
 ## Future Improvements
 
-- Implement remaining agent classes (MarketingExpert, SocialMediaTeam, MarketingTeam)
-- Develop comprehensive test suite for all components
 - Integrate all components in the main application flow
 - Implement more sophisticated AI model interactions
 - Enhance the web interface with real-time updates
 - Add support for image generation in marketing materials
 - Implement user accounts and project saving functionality
+- Refine interactions between agents for smoother information flow
+- Implement comprehensive error handling and logging
 
 ## Contributing
 
