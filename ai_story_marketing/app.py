@@ -4,12 +4,14 @@
 # This is where all the magic happens to turn your ideas into amazing stories!
 
 # First, let's import all the tools we need 🧰
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify, session, send_file, flash, redirect, url_for, after_this_request
 from flask_session import Session
 import os
+import time
 from dotenv import load_dotenv
 import markdown
 import logging
+import tempfile
 from .agents.story_writer import StoryWriter
 from .agents.evaluator import Evaluator
 from .agents.marketing_expert import MarketingExpert
@@ -17,6 +19,8 @@ from .agents.social_media_team import SocialMediaTeam
 from .agents.marketing_team import MarketingTeam
 from .models.llama_model import LlamaModel
 from .utils.output_generator import OutputGenerator
+from .utils.pdf_generator import PDFGenerator
+from werkzeug.utils import secure_filename
 
 # Let's set up our app's secret hideout 🕵️‍♂️
 load_dotenv()  # This loads all our secret codes from a special file
@@ -199,6 +203,70 @@ def result():
     result = output_generator.generate_output()
 
     return render_template('result.html', result=result, progress=session.get('progress', []))
+
+# This is where we create a PDF of everything we made! 📄
+@app.route('/download-pdf')
+def download_pdf():
+    try:
+        # Let's gather all the cool stuff we made
+        story = session.get('story')
+        evaluation = session.get('evaluation')
+        marketing_analysis = session.get('marketing_analysis')
+        social_media_content = session.get('social_media_content')
+        marketing_concepts = session.get('marketing_concepts')
+
+        # 🧐 Check if we have all the pieces we need
+        if not all([story, evaluation, marketing_analysis, social_media_content, marketing_concepts]):
+            # 😕 Uh-oh, something's missing!
+            flash("Oops! We lost some of your data. Let's start over!", "error")
+            return redirect(url_for('home'))
+
+        # 🎨 Let's create our PDF!
+        pdf_generator = PDFGenerator()
+        content = {
+            "story": story,
+            "evaluation": evaluation,
+            "marketing_analysis": marketing_analysis,
+            "social_media_content": social_media_content,
+            "marketing_concepts": marketing_concepts
+        }
+        
+        # 📁 Create a temporary file with a secure filename
+        temp_dir = tempfile.gettempdir()
+        temp_filename = secure_filename(f"story_package_{int(time.time())}.pdf")
+        pdf_path = os.path.join(temp_dir, temp_filename)
+        
+        pdf_generator.generate_pdf(content, pdf_path)
+
+        # 📤 Now, let's send this PDF to be downloaded
+        return send_file(pdf_path, as_attachment=True, download_name="your_story_package.pdf")
+
+    except Exception as e:
+        # 😱 Oh no! Something went wrong
+        app.logger.error(f"Error generating PDF: {str(e)}")
+        flash("Sorry, we couldn't create your PDF right now. Please try again later!", "error")
+        return redirect(url_for('result'))
+
+    finally:
+        # 🧹 Clean up the PDF file after sending
+        def cleanup_pdf(path):
+            max_attempts = 5
+            for attempt in range(max_attempts):
+                try:
+                    if os.path.exists(path):
+                        os.remove(path)
+                    break
+                except PermissionError:
+                    if attempt < max_attempts - 1:
+                        time.sleep(0.1)  # Wait a bit before trying again
+                    else:
+                        app.logger.warning(f"Failed to delete temporary PDF file: {path}")
+
+        # Schedule the cleanup to run after the response has been sent
+        @after_this_request
+        def cleanup(response):
+            cleanup_pdf(pdf_path)
+            return response
 
 # This turns on our app when we're ready to play! 🎮
 if __name__ == "__main__":

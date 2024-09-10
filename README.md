@@ -8,6 +8,7 @@ Welcome to our AI-Driven Story Creation and Marketing System! This project takes
 - 🧐 Story evaluation
 - 🎭 Marketing persona creation
 - 📱 Social media content generation
+- 🚀 Iterative story improvement
 - 🎨 Marketing concept creation
 - 🏃‍♂️ Progress tracking
 - 📝 Markdown rendering for all generated content

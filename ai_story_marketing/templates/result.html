@@ -1,109 +1,88 @@
 <!-- 📁 File: ai_story_marketing/ai_story_marketing/templates/result.html -->
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎉 Your Amazing Story and Marketing Plan</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .markdown-content h1, .markdown-content h2, .markdown-content h3 {
-            margin-top: 1em;
-            margin-bottom: 0.5em;
-        }
-        .markdown-content p {
-            margin-bottom: 1em;
-        }
-        .markdown-content ul, .markdown-content ol {
-            margin-left: 1.5em;
-            margin-bottom: 1em;
-        }
-        .markdown-content blockquote {
-            border-left: 4px solid #e2e8f0;
-            padding-left: 1em;
-            margin-left: 0;
-            margin-right: 0;
-            font-style: italic;
-        }
-    </style>
-</head>
-<body class="bg-gray-100 min-h-screen">
-    <div class="container mx-auto px-4 py-8">
-        <div class="bg-white p-8 rounded-lg shadow-2xl">
-            <h1 class="text-4xl font-bold mb-8 text-center text-gray-800">🎉 Your Amazing Story and Marketing Plan</h1>
-            
-            <!-- 🏃‍♂️ This is our completed progress bar! -->
-            <div class="mb-8">
-                <h2 class="text-2xl font-semibold mb-2 text-gray-700">Your Progress - All Complete! 🎊</h2>
-                <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                    <div class="bg-green-600 h-2.5 rounded-full w-full"></div>
-                </div>
-                <ul class="mt-2 text-sm text-gray-600">
-                    {% for step in ['story_creation', 'evaluation', 'marketing_analysis', 'social_media', 'marketing_concepts'] %}
-                        <li class="text-green-600 font-bold">
-                            ✅ {{ step|replace('_', ' ')|title }}
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
+{% extends "base.html" %}
+{% block content %}
 
-            <div class="section mb-12">
-                <h2 class="text-2xl font-semibold mb-4 text-gray-700">📖 Your Story</h2>
-                <div class="markdown-content text-gray-600">{{ result.story|safe }}</div>
-            </div>
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white p-8 rounded-lg shadow-2xl">
+        <h1 class="text-4xl font-bold mb-8 text-center text-gray-800">🎉 Your Amazing Story and Marketing Plan</h1>
 
-            <div class="section mb-12">
-                <h2 class="text-2xl font-semibold mb-4 text-gray-700">🧐 Story Evaluation</h2>
-                <p class="text-gray-600"><strong>Score:</strong> {{ result.evaluation.score }}/10</p>
-                <div class="markdown-content text-gray-600"><strong>Feedback:</strong> {{ result.evaluation.feedback|safe }}</div>
+        <div class="mb-8">
+            <h2 class="text-2xl font-semibold mb-2 text-gray-700">Your Progress - All Complete! 🎊</h2>
+            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                <div class="bg-green-600 h-2.5 rounded-full w-full"></div>
             </div>
+            {% for step in progress %}
+                <p class="mt-2">✅ {{ step|replace('_', ' ')|title }}</p>
+            {% endfor %}
+        </div>
 
-            <div class="section mb-12">
-                <h2 class="text-2xl font-semibold mb-4 text-gray-700">🎯 Marketing Analysis</h2>
-                <h3 class="text-xl font-medium mb-2 text-gray-600">Target Audience:</h3>
-                <div class="markdown-content text-gray-600 mb-4">{{ result.marketing_analysis.target_audience|safe }}</div>
-                <h3 class="text-xl font-medium mb-2 text-gray-600">Personas:</h3>
-                <ul class="list-disc list-inside text-gray-600">
-                    {% for persona in result.marketing_analysis.personas %}
-                        <li class="markdown-content">{{ persona|safe }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-
-            <div class="section mb-12">
-                <h2 class="text-2xl font-semibold mb-4 text-gray-700">📱 Social Media Content</h2>
-                {% for platform, content in result.social_media_content.items() %}
-                    <div class="mb-4">
-                        <h3 class="text-xl font-medium mb-2 text-gray-600">{{ platform }}</h3>
-                        <div class="markdown-content text-gray-600">{{ content|safe }}</div>
-                    </div>
-                {% endfor %}
-            </div>
-
-            <div class="section mb-12">
-                <h2 class="text-2xl font-semibold mb-4 text-gray-700">🎨 Marketing Concepts</h2>
-                {% for concept, description in result.marketing_concepts.items() %}
-                    <div class="mb-4">
-                        <h3 class="text-xl font-medium mb-2 text-gray-600">{{ concept|title }}</h3>
-                        <div class="markdown-content text-gray-600">{{ description|safe }}</div>
-                    </div>
-                {% endfor %}
-            </div>
-
-            <!-- 🔄 This is the new button to create a new story -->
-            <div class="text-center mt-8">
-                <a href="/" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                    Create New Story 🚀
-                </a>
-            </div>
-
-            <div class="text-center">
-                <a href="/download-pdf" class="inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                    Download PDF 📥
-                </a>
+        <div class="section mb-12">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-700">📖 Your Story</h2>
+            <div class="markdown-content text-gray-600">
+                {{ result.story|safe }}
             </div>
         </div>
+
+        <div class="section mb-12">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-700">🧐 Story Evaluation</h2>
+            <p class="font-bold">Score: {{ result.evaluation.score }}/10</p>
+            <div class="markdown-content text-gray-600">
+                <p class="font-bold">Feedback:</p>
+                {{ result.evaluation.feedback|safe }}
+            </div>
+        </div>
+
+        <div class="section mb-12">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-700">🎯 Marketing Analysis</h2>
+            <h3 class="text-xl font-medium mb-2 text-gray-600">Target Audience:</h3>
+            <div class="markdown-content text-gray-600 mb-4">
+                {{ result.marketing_analysis.target_audience|safe }}
+            </div>
+            <h3 class="text-xl font-medium mb-2 text-gray-600">Personas:</h3>
+            <ul class="list-disc pl-5">
+                {% for persona in result.marketing_analysis.personas %}
+                    <li class="markdown-content text-gray-600">{{ persona|safe }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="section mb-12">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-700">📱 Social Media Content</h2>
+            {% for platform, content in result.social_media_content.items() %}
+                <div class="mb-4">
+                    <h3 class="text-xl font-medium mb-2 text-gray-600">{{ platform }}</h3>
+                    <div class="markdown-content text-gray-600">
+                        {{ content|safe }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="section mb-12">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-700">🎨 Marketing Concepts</h2>
+            {% for concept, description in result.marketing_concepts.items() %}
+                <div class="mb-4">
+                    <h3 class="text-xl font-medium mb-2 text-gray-600">{{ concept|title }}</h3>
+                    <div class="markdown-content text-gray-600">
+                        {{ description|safe }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-8">
+            <a href="/" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Create New Story 🚀
+            </a>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{{ url_for('download_pdf') }}" class="inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Download PDF 📥
+            </a>
+        </div>
     </div>
-</body>
-</html>
+</div>
+
+{% endblock %}
