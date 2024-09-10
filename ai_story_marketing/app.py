@@ -9,6 +9,7 @@ from flask_session import Session
 import os
 from dotenv import load_dotenv
 import markdown
+import logging
 from .agents.story_writer import StoryWriter
 from .agents.evaluator import Evaluator
 from .agents.marketing_expert import MarketingExpert
@@ -19,6 +20,10 @@ from .utils.output_generator import OutputGenerator
 
 # Let's set up our app's secret hideout 🕵️‍♂️
 load_dotenv()  # This loads all our secret codes from a special file
+
+# Set up our magical app log 📜✨
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Now, let's create our Flask app - it's like a magic wand for websites! 🪄
 app = Flask(__name__)
@@ -64,17 +69,33 @@ def home():
         try:
             # Time to create our story! 📚
             story = story_writer.process(idea)
-            session['story'] = story  # Let's remember this story for later
-            track_progress(session, 'story_creation')  # 🏃‍♂️ Let's track our progress!
-
-            # Now, let's see how good our story is! 🧐
-            evaluation = evaluator.process(story)
+            
+            # Now, let's evaluate and improve our story until it's great! 🔄
+            attempts = 0
+            max_attempts = 5  # Let's limit the number of improvement attempts
+            
+            while attempts < max_attempts:
+                evaluation = evaluator.process(story)
+                score = evaluation['score']
+                feedback = evaluation['feedback']
+                logger.info(f"Evaluation result: Score {score}, Feedback: {feedback}")
+                
+                if score >= 8:
+                    break  # Yay! Our story is great!
+                
+                # Let's try to improve our story
+                story = story_writer.improve_story(feedback)
+                attempts += 1
+            
+            session['story'] = story
             session['evaluation'] = evaluation
-            track_progress(session, 'evaluation')  # 🏃‍♂️ More progress!
+            track_progress(session, 'story_creation')
+            track_progress(session, 'evaluation')
 
             return jsonify({"message": "Great! We've created your story. Let's make it even better!", "next": "/evaluate"})
 
         except Exception as e:
+            logger.error(f"Error in story creation process: {str(e)}")
             return jsonify({"error": f"Oh no! Our story machine got confused: {str(e)}"})
 
     # If no one gave us an idea yet, let's just show the page where they can give us one
@@ -136,6 +157,7 @@ def market():
         return render_template('market.html', marketing_analysis=marketing_analysis, progress=session.get('progress', []))
 
     except Exception as e:
+        logger.error(f"Error in marketing process: {str(e)}")
         return jsonify({"error": f"Oh no! Our marketing machine got confused: {str(e)}"})
 
 # This is where we show everything we made! 🎉

@@ -37,14 +37,16 @@ def test_track_progress(client):
         assert sess['progress'] == ['story_creation', 'evaluation']
 
 def test_progress_in_templates(client):
-    # 🖼️ Let's make sure our progress shows up in our web pages!
+    # 🖼️ Let's make sure our progress shows up in our evaluate page!
     
     # First, let's add some progress
     with client.session_transaction() as sess:
         sess['progress'] = ['story_creation', 'evaluation']
+        sess['story'] = "Once upon a time..."
+        sess['evaluation'] = {"score": 8, "feedback": "Great story!"}
     
-    # Now, let's check our home page
-    response = client.get('/')
+    # Now, let's check our evaluate page
+    response = client.get('/evaluate')
     assert b'Story Creation' in response.data
     assert b'Evaluation' in response.data
 
