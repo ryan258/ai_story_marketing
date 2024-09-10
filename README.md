@@ -9,6 +9,8 @@ Welcome to our AI-Driven Story Creation and Marketing System! This project takes
 - 🎭 Marketing persona creation
 - 📱 Social media content generation
 - 🎨 Marketing concept creation
+- 🏃‍♂️ Progress tracking
+- 📝 Markdown rendering for all generated content
 - 📊 Comprehensive output generation
 
 ## 🛠️ Technology Stack
@@ -19,6 +21,7 @@ Welcome to our AI-Driven Story Creation and Marketing System! This project takes
 - AI Model: LlamaModel (simplified version for educational purposes) 🦙
 - Testing: pytest 🧪
 - Project Management: Poetry 📦
+- Markdown Processing: Python-Markdown 📝
 - Environment Variable Management: python-dotenv 🔐
 
 ## 🏗️ Setup
@@ -96,6 +99,7 @@ ai_story_marketing/
 │   │   └── result.html
 │   └── utils/
 │       ├── __init__.py
+        ├── context_manager.py
 │       └── output_generator.py
 └── tests/
     ├── __init__.py
@@ -103,7 +107,9 @@ ai_story_marketing/
     ├── test_evaluator.py
     ├── test_marketing_expert.py
     ├── test_marketing_team.py
-    └── test_social_media_team.py
+    ├── test_social_media_team.py
+    ├── test_progress_tracking.py
+    └── test_llama_model.py
 ```
 
 ## 👥 Contributing

@@ -8,6 +8,7 @@ from flask import Flask, render_template, request, jsonify, session
 from flask_session import Session
 import os
 from dotenv import load_dotenv
+import markdown
 from .agents.story_writer import StoryWriter
 from .agents.evaluator import Evaluator
 from .agents.marketing_expert import MarketingExpert
@@ -36,6 +37,17 @@ marketing_team = MarketingTeam(model)
 # And let's not forget our magical notebook to write everything down 📓
 output_generator = OutputGenerator()
 
+# 🏃‍♂️ This is our new function to keep track of our progress!
+def track_progress(session, step):
+    if 'progress' not in session:
+        session['progress'] = []
+    if step not in session['progress']:
+        session['progress'].append(step)
+
+# 📝 This function converts Markdown to HTML
+def convert_markdown_to_html(text):
+    return markdown.markdown(text)
+
 # This is the page you see when you first open our app 🏠
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -49,10 +61,12 @@ def home():
             # Time to create our story! 📚
             story = story_writer.process(idea)
             session['story'] = story  # Let's remember this story for later
+            track_progress(session, 'story_creation')  # 🏃‍♂️ Let's track our progress!
 
             # Now, let's see how good our story is! 🧐
             evaluation = evaluator.process(story)
             session['evaluation'] = evaluation
+            track_progress(session, 'evaluation')  # 🏃‍♂️ More progress!
 
             return jsonify({"message": "Great! We've created your story. Let's make it even better!", "next": "/evaluate"})
 
@@ -60,7 +74,7 @@ def home():
             return jsonify({"error": f"Oh no! Our story machine got confused: {str(e)}"})
 
     # If no one gave us an idea yet, let's just show the page where they can give us one
-    return render_template('home.html')
+    return render_template('home.html', progress=session.get('progress', []))
 
 # This is where we show how good our story is and ask if we should make it better 🌟
 @app.route('/evaluate', methods=['GET', 'POST'])
@@ -73,19 +87,21 @@ def evaluate():
             # They want a new story! Let's clear the old one and start over.
             session.pop('story', None)
             session.pop('evaluation', None)
+            session['progress'] = []  # 🏃‍♂️ Let's reset our progress too!
             return jsonify({"message": "No problem! Let's try again with a new story.", "next": "/"})
 
-    story = session.get('story')
+    story = convert_markdown_to_html(session.get('story', ''))
     evaluation = session.get('evaluation')
     if not story or not evaluation:
         return jsonify({"error": "Oops! We lost your story. Let's start over!", "next": "/"})
-
-    return render_template('evaluate.html', story=story, evaluation=evaluation)
+    evaluation['feedback'] = convert_markdown_to_html(evaluation.get('feedback', ''))
+    return render_template('evaluate.html', story=story, evaluation=evaluation, progress=session.get('progress', []))
 
 # This is where we figure out who will love our story! 🎭
 @app.route('/market', methods=['GET', 'POST'])
 def market():
     if request.method == 'POST':
+        track_progress(session, 'marketing')  # 🏃‍♂️ Let's track our marketing progress!
         return jsonify({"message": "Great! We've created your marketing plan. Let's see the whole package!", "next": "/result"})
 
     story = session.get('story')
@@ -95,17 +111,25 @@ def market():
     try:
         # Time to figure out who will love our story! 🎭
         marketing_analysis = marketing_expert.process(story)
+        
+        # Convert Markdown to HTML for marketing analysis
+        marketing_analysis['target_audience'] = convert_markdown_to_html(marketing_analysis['target_audience'])
+        marketing_analysis['personas'] = [convert_markdown_to_html(persona) for persona in marketing_analysis['personas']]
+        
         session['marketing_analysis'] = marketing_analysis
+        track_progress(session, 'marketing_analysis')  # 🏃‍♂️ More progress!
 
         # Let's create some cool social media posts! 📱
         social_media_content = social_media_team.process(story, marketing_analysis['personas'], marketing_analysis['target_audience'])
         session['social_media_content'] = social_media_content
+        track_progress(session, 'social_media')  # 🏃‍♂️ We're getting there!
 
         # And finally, let's come up with some awesome marketing ideas! 🎬
         marketing_concepts = marketing_team.process(story, marketing_analysis['personas'], marketing_analysis['target_audience'])
         session['marketing_concepts'] = marketing_concepts
+        track_progress(session, 'marketing_concepts')  # 🏃‍♂️ Almost done!
 
-        return render_template('market.html', marketing_analysis=marketing_analysis)
+        return render_template('market.html', marketing_analysis=marketing_analysis, progress=session.get('progress', []))
 
     except Exception as e:
         return jsonify({"error": f"Oh no! Our marketing machine got confused: {str(e)}"})
@@ -123,6 +147,22 @@ def result():
     if not all([story, evaluation, marketing_analysis, social_media_content, marketing_concepts]):
         return jsonify({"error": "Oops! We lost some of your data. Let's start over!", "next": "/"})
 
+    # Convert Markdown to HTML for all content
+    story = convert_markdown_to_html(story)
+    evaluation['feedback'] = convert_markdown_to_html(evaluation['feedback'])
+    
+    # Convert marketing analysis
+    marketing_analysis['target_audience'] = convert_markdown_to_html(marketing_analysis['target_audience'])
+    marketing_analysis['personas'] = [convert_markdown_to_html(persona) for persona in marketing_analysis['personas']]
+    
+    # Convert social media content
+    for platform in social_media_content:
+        social_media_content[platform] = convert_markdown_to_html(social_media_content[platform])
+    
+    # Convert marketing concepts
+    for concept in marketing_concepts:
+        marketing_concepts[concept] = convert_markdown_to_html(marketing_concepts[concept])
+
     # Now, let's put it all together in one magical package! ✨
     output_generator.add_content("story", story)
     output_generator.add_content("evaluation", evaluation)
@@ -132,7 +172,7 @@ def result():
 
     result = output_generator.generate_output()
 
-    return render_template('result.html', result=result)
+    return render_template('result.html', result=result, progress=session.get('progress', []))
 
 # This turns on our app when we're ready to play! 🎮
 if __name__ == "__main__":
