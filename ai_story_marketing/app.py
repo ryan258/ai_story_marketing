@@ -51,6 +51,10 @@ def convert_markdown_to_html(text):
 # This is the page you see when you first open our app 🏠
 @app.route('/', methods=['GET', 'POST'])
 def home():
+    if request.method == 'GET':
+        # 🧹 Clear all session data when accessing the home page
+        session.clear()
+
     if request.method == 'POST':
         # Someone gave us a new idea! Let's make a story! 💡
         idea = request.form.get('idea')
@@ -74,7 +78,7 @@ def home():
             return jsonify({"error": f"Oh no! Our story machine got confused: {str(e)}"})
 
     # If no one gave us an idea yet, let's just show the page where they can give us one
-    return render_template('home.html', progress=session.get('progress', []))
+    return render_template('home.html')
 
 # This is where we show how good our story is and ask if we should make it better 🌟
 @app.route('/evaluate', methods=['GET', 'POST'])

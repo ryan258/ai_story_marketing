@@ -12,21 +12,6 @@
     <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md">
         <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">🚀 Story Creator</h1>
         
-        <!-- 🏃‍♂️ This is our new progress bar! -->
-        <div class="mb-6">
-            <h2 class="text-xl font-semibold mb-2 text-gray-700">Your Progress</h2>
-            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                <div class="bg-blue-600 h-2.5 rounded-full" style="width: {{ (progress|length / 5) * 100 }}%"></div>
-            </div>
-            <ul class="mt-2 text-sm text-gray-600">
-                {% for step in ['story_creation', 'evaluation', 'marketing_analysis', 'social_media', 'marketing_concepts'] %}
-                    <li class="{% if step in progress %}text-green-600 font-bold{% endif %}">
-                        {% if step in progress %}✅{% else %}⏳{% endif %} {{ step|replace('_', ' ')|title }}
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-
         <form action="/" method="post">
             <div class="mb-4">
                 <label for="idea" class="block text-gray-700 text-sm font-bold mb-2">Your Amazing Idea:</label>
