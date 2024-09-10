@@ -1,8 +1,73 @@
-# AI-Driven Story Creation and Marketing System
+# 🚀 AI-Driven Story Creation and Marketing System
 
-This system takes a simple idea input and generates a comprehensive story and marketing package using a chain of AI agents.
+Welcome to our AI-Driven Story Creation and Marketing System! This project takes a simple idea input and generates a comprehensive story and marketing package using a chain of AI agents.
 
-## Project Structure
+## ✨ Features
+
+- 📝 Story creation from a simple idea input
+- 🧐 Story evaluation
+- 🎭 Marketing persona creation
+- 📱 Social media content generation
+- 🎨 Marketing concept creation
+- 📊 Comprehensive output generation
+
+## 🛠️ Technology Stack
+
+- Backend: Python 🐍
+- Web Framework: Flask 🌶️
+- Frontend: HTML, TailwindCSS 🎨
+- AI Model: LlamaModel (simplified version for educational purposes) 🦙
+- Testing: pytest 🧪
+- Project Management: Poetry 📦
+- Environment Variable Management: python-dotenv 🔐
+
+## 🏗️ Setup
+
+1. Ensure you have Python 3.11+ installed.
+2. Install Poetry if you haven't already:
+   ```
+   pip install poetry
+   ```
+3. Clone this repository:
+   ```
+   git clone https://github.com/yourusername/ai-story-marketing.git
+   cd ai-story-marketing
+   ```
+4. Install dependencies:
+   ```
+   poetry install
+   ```
+5. Set up environment variables:
+   - Copy `.env.example` to `.env`
+   - Fill in any required API keys or configuration values
+
+## 🚀 Running the Application
+
+1. Activate the Poetry environment:
+   ```
+   poetry shell
+   ```
+2. Run the Flask application:
+   ```
+   python ai_story_marketing/app.py
+   ```
+3. Open a web browser and navigate to `http://127.0.0.1:5000`
+
+## 🧪 Running Tests
+
+To run the test suite:
+
+```
+pytest
+```
+
+To run tests with verbose output:
+
+```
+pytest -v
+```
+
+## 📁 Project Structure
 
 ```
 ai_story_marketing/
@@ -12,7 +77,7 @@ ai_story_marketing/
 ├── README.md
 ├── ai_story_marketing/
 │   ├── __init__.py
-│   ├── main.py
+│   ├── app.py
 │   ├── agents/
 │   │   ├── __init__.py
 │   │   ├── base_agent.py
@@ -23,97 +88,40 @@ ai_story_marketing/
 │   │   └── marketing_team.py
 │   ├── models/
 │   │   ├── __init__.py
-│   │   ├── gpt4_model.py
-│   │   ├── claude_model.py
 │   │   └── llama_model.py
-│   ├── ui/
-│   │   ├── __init__.py
-│   │   └── app.py
+│   ├── templates/
+│   │   ├── home.html
+│   │   ├── evaluate.html
+│   │   ├── market.html
+│   │   └── result.html
 │   └── utils/
 │       ├── __init__.py
-│       ├── output_generator.py
+│       └── output_generator.py
 └── tests/
     ├── __init__.py
+    ├── test_app.py
     ├── test_evaluator.py
     ├── test_marketing_expert.py
     ├── test_marketing_team.py
-    ├── test_social_media_team.py
-    └── test_main.py
+    └── test_social_media_team.py
 ```
 
-## Main Components
+## 👥 Contributing
 
-1. **Agents**: Each agent (StoryWriter, Evaluator, MarketingExpert, SocialMediaTeam, MarketingTeam) inherits from BaseAgent and specializes in a specific task.
-   - Implemented and tested
+We welcome contributions to this project! Please follow these steps:
 
-2. **Models**: Interfaces for different AI models (GPT-4, Claude, Llama) that can be used by the agents.
-   - Basic LlamaModel implemented for demonstration
+1. Fork the repository
+2. Create a new branch: `git checkout -b feature-branch-name`
+3. Make your changes and commit them: `git commit -m 'Add some feature'`
+4. Push to the branch: `git push origin feature-branch-name`
+5. Submit a pull request
 
-3. **UI**: A Flask-based web interface for interacting with the system.
-   - Basic implementation complete
+Please make sure to update tests as appropriate and adhere to the existing coding style.
 
-4. **Utils**: OutputGenerator for compiling the final output.
-   - Implemented and tested
+## 📄 License
 
-5. **Main Application**: Coordinates all agents and generates the final output.
-   - Implemented and tested
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Setup
+---
 
-1. Ensure you have Python 3.8+ installed.
-2. Install Poetry: `pip install poetry`
-3. Clone this repository and navigate to the project directory.
-4. Install dependencies: `poetry install`
-5. Set up environment variables:
-   - Copy `.env.example` to `.env`
-   - Fill in the required API keys and configuration values
-
-## Usage
-
-1. Activate the Poetry environment: `poetry shell`
-2. Run the application: `python ai_story_marketing/main.py`
-3. Open a web browser and navigate to `http://localhost:5000`
-4. Enter your idea and follow the prompts to generate your story and marketing package.
-
-## Development
-
-- To run tests: `poetry run pytest`
-- To run tests with verbose output: `poetry run pytest -v -s`
-- To add new dependencies: `poetry add <package-name>`
-
-## Main Features
-
-- Story Creation: Generates a simple story based on user input.
-- Story Evaluation: Evaluates the generated story.
-- Marketing Analysis: Creates target audience personas.
-- Social Media Content Generation: Generates content for various social media platforms.
-- Marketing Concepts: Generates concepts for marketing campaigns.
-- Comprehensive Output: Compiles all generated content into a single JSON response.
-
-## Educational Note
-
-This project uses a simplified version of an AI model (LlamaModel) for educational purposes. In a real-world scenario, we would integrate with actual machine learning models.
-
-## Technology Stack
-
-- Backend: Python
-- Frontend: Flask, TailwindCSS
-- AI Models: Simplified educational implementation (LlamaModel)
-- Project Management: Poetry
-- PDF Generation: FPDF
-
-## Future Improvements
-
-- Implement more sophisticated AI model interactions with real machine learning models
-- Enhance the web interface with real-time updates
-- Add support for image generation in marketing materials
-- Implement user accounts and project saving functionality
-- Implement PDF generation feature
-
-## Contributing
-
-Please read CONTRIBUTING.md for details on our code of conduct and the process for submitting pull requests.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE.md file for details.
+Happy story creating! If you have any questions or run into any issues, please open an issue on the GitHub repository. 📚✨

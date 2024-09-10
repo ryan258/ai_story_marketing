@@ -1,7 +1,8 @@
 # 📁 File: ai_story_marketing/ai_story_marketing/utils/output_generator.py
 
-from fpdf import FPDF  # We'll use this to make cool PDFs! 📄
-import json  # This helps us work with dictionary data 📚
+import json
+import pdfkit
+from jinja2 import Environment, FileSystemLoader
 
 class OutputGenerator:
     """
@@ -13,9 +14,9 @@ class OutputGenerator:
         self.content = {
             "story": None,
             "evaluation": None,
-            "marketing_analysis": None,  # Changed from 'marketing_persona' to 'marketing_analysis'
+            "marketing_analysis": None,
             "social_media_content": None,
-            "marketing_concepts": None  # Changed from 'marketing_materials' to 'marketing_concepts'
+            "marketing_concepts": None
         }
 
     def add_content(self, content_type, data):
@@ -41,25 +42,17 @@ class OutputGenerator:
                     output[section] = str(content)
         return output
 
-    def generate_pdf(self, filename="output.pdf"):
+    def generate_pdf(self, template_path, output_path):
         """
         📜 This is where we make a fancy PDF of our story and marketing plan!
         """
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size=12)
-
-        for section, content in self.content.items():
-            if content:
-                pdf.cell(200, 10, txt=f"--- {section.upper()} ---", ln=True, align='C')
-                if isinstance(content, dict):
-                    for key, value in content.items():
-                        pdf.multi_cell(0, 10, txt=f"{key}: {value}")
-                else:
-                    pdf.multi_cell(0, 10, txt=str(content))
-                pdf.ln(10)
-
-        pdf.output(filename)
+        env = Environment(loader=FileSystemLoader('.'))
+        template = env.get_template(template_path)
+        
+        html_out = template.render(result=self.content)
+        
+        # Now, let's turn our HTML into a beautiful PDF!
+        pdfkit.from_string(html_out, output_path)
 
     def clear_content(self):
         """

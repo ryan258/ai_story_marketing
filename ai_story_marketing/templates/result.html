@@ -1,0 +1,73 @@
+<!-- 📁 File: ai_story_marketing/ai_story_marketing/templates/result.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎉 Your Story and Marketing Plan</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 min-h-screen py-12">
+    <div class="container mx-auto px-4">
+        <div class="bg-white p-8 rounded-lg shadow-2xl">
+            <h1 class="text-4xl font-bold mb-8 text-center text-gray-800">🎉 Your Amazing Story and Marketing Plan</h1>
+            
+            <!-- Story Section -->
+            <section class="mb-12">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">📖 Your Story</h2>
+                <p class="text-gray-600 bg-gray-100 p-4 rounded-md">{{ result.story }}</p>
+            </section>
+
+            <!-- Evaluation Section -->
+            <section class="mb-12">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">🧐 Story Evaluation</h2>
+                <p class="text-gray-600"><strong>Score:</strong> {{ result.evaluation.score }}/10</p>
+                <p class="text-gray-600"><strong>Feedback:</strong> {{ result.evaluation.feedback }}</p>
+            </section>
+
+            <!-- Marketing Analysis Section -->
+            <section class="mb-12">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">🎯 Marketing Analysis</h2>
+                <h3 class="text-xl font-medium mb-2 text-gray-600">Target Audience:</h3>
+                <p class="text-gray-600 mb-4">{{ result.marketing_analysis.target_audience }}</p>
+                <h3 class="text-xl font-medium mb-2 text-gray-600">Personas:</h3>
+                <ul class="list-disc list-inside text-gray-600">
+                    {% for persona in result.marketing_analysis.personas %}
+                        <li>{{ persona }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <!-- Social Media Content Section -->
+            <section class="mb-12">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">📱 Social Media Content</h2>
+                {% for platform, content in result.social_media_content.items() %}
+                    <div class="mb-4">
+                        <h3 class="text-xl font-medium mb-2 text-gray-600">{{ platform }}</h3>
+                        <p class="text-gray-600 bg-gray-100 p-4 rounded-md">{{ content }}</p>
+                    </div>
+                {% endfor %}
+            </section>
+
+            <!-- Marketing Concepts Section -->
+            <section class="mb-12">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">🎨 Marketing Concepts</h2>
+                {% for concept, description in result.marketing_concepts.items() %}
+                    <div class="mb-4">
+                        <h3 class="text-xl font-medium mb-2 text-gray-600">{{ concept|title }}</h3>
+                        <p class="text-gray-600 bg-gray-100 p-4 rounded-md">{{ description }}</p>
+                    </div>
+                {% endfor %}
+            </section>
+
+            <!-- Download PDF Button -->
+            <div class="text-center">
+                <a href="/download-pdf" class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    Download PDF 📥
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

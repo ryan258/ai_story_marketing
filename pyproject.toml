@@ -11,6 +11,8 @@ Flask = "^3.0.3"
 fpdf = "^1.7.2"
 python-dotenv = "^1.0.1"
 pytest = "^8.3.2"
+pdfkit = "^1.0.0"
+flask-session = "^0.8.0"
 
 
 [build-system]

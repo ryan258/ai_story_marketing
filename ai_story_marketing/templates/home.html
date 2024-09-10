@@ -1,0 +1,54 @@
+<!-- 📁 File: ai_story_marketing/ai_story_marketing/templates/home.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏠 Story Creator Home</title>
+    <!-- 🎨 We're using Tailwind CSS for quick and easy styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md">
+        <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">🚀 Story Creator</h1>
+        
+        <!-- 📝 This is where we'll type our story idea -->
+        <form action="/" method="post" class="space-y-4">
+            <div>
+                <label for="idea" class="block text-sm font-medium text-gray-700">Your Amazing Idea:</label>
+                <textarea id="idea" name="idea" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" placeholder="Once upon a time..."></textarea>
+            </div>
+            
+            <!-- 🎨 This button will send our idea to be turned into a story -->
+            <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Create My Story! 🎨
+            </button>
+        </form>
+        
+        <!-- 💬 This is where we'll show messages to the user -->
+        <div id="message" class="mt-4 text-center text-sm font-medium"></div>
+    </div>
+
+    <!-- 🧠 This script will help us show messages without reloading the page -->
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            fetch('/', {
+                method: 'POST',
+                body: new FormData(this)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('message').textContent = data.error;
+                } else if (data.next) {
+                    window.location.href = data.next;
+                } else {
+                    document.getElementById('message').textContent = data.message;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

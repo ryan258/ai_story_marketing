@@ -1,0 +1,67 @@
+<!-- 📁 File: ai_story_marketing/ai_story_marketing/templates/pdf_template.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Story and Marketing Plan</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        h1 { color: #2c3e50; text-align: center; }
+        h2 { color: #34495e; margin-top: 20px; }
+        .section { margin-bottom: 20px; }
+        .content { background-color: #f7f9fc; padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Your Amazing Story and Marketing Plan</h1>
+    
+    <div class="section">
+        <h2>Your Story</h2>
+        <div class="content">{{ result.story }}</div>
+    </div>
+
+    <div class="section">
+        <h2>Story Evaluation</h2>
+        <div class="content">
+            <p><strong>Score:</strong> {{ result.evaluation.score }}/10</p>
+            <p><strong>Feedback:</strong> {{ result.evaluation.feedback }}</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Marketing Analysis</h2>
+        <div class="content">
+            <h3>Target Audience:</h3>
+            <p>{{ result.marketing_analysis.target_audience }}</p>
+            <h3>Personas:</h3>
+            <ul>
+                {% for persona in result.marketing_analysis.personas %}
+                    <li>{{ persona }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Social Media Content</h2>
+        <div class="content">
+            {% for platform, content in result.social_media_content.items() %}
+                <h3>{{ platform }}</h3>
+                <p>{{ content }}</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Marketing Concepts</h2>
+        <div class="content">
+            {% for concept, description in result.marketing_concepts.items() %}
+                <h3>{{ concept|title }}</h3>
+                <p>{{ description }}</p>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

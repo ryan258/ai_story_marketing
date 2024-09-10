@@ -1,24 +1,32 @@
-<!-- 📁 File: ai_story_marketing/ai_story_marketing/templates/home.html -->
+<!-- 📁 File: ai_story_marketing/ai_story_marketing/templates/market.html -->
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌟 Story Creator - Home</title>
+    <title>🎭 Marketing Analysis</title>
     <!-- Let's make our page look pretty with some CSS magic! ✨ -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 min-h-screen flex items-center justify-center">
-    <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md">
-        <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">🚀 Story Creator</h1>
-        <form id="ideaForm" class="space-y-4">
-            <div>
-                <label for="idea" class="block text-sm font-medium text-gray-700">Your Amazing Idea:</label>
-                <textarea id="idea" name="idea" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" placeholder="Once upon a time..."></textarea>
-            </div>
+<body class="bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-2xl">
+        <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">🎭 Marketing Magic</h1>
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold mb-2 text-gray-700">🎯 Target Audience:</h2>
+            <p class="text-gray-600 bg-gray-100 p-4 rounded-md">{{ marketing_analysis.target_audience }}</p>
+        </div>
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold mb-2 text-gray-700">👥 Personas:</h2>
+            <ul class="list-disc list-inside text-gray-600">
+                {% for persona in marketing_analysis.personas %}
+                    <li>{{ persona }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <form id="marketingForm" class="space-y-4">
             <button type="submit" class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Create My Story! 🎨
+                Create Marketing Plan! 📈
             </button>
         </form>
         <div id="message" class="mt-4 text-center text-sm font-medium"></div>
@@ -26,20 +34,16 @@
 
     <!-- Let's add some JavaScript to make our page interactive! 🎭 -->
     <script>
-        document.getElementById('ideaForm').addEventListener('submit', function(e) {
+        document.getElementById('marketingForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const idea = document.getElementById('idea').value;
             const messageDiv = document.getElementById('message');
 
-            // Let's send our idea to the story machine!
-            fetch('/', {
+            // Let's create our marketing plan!
+            fetch('/market', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: new URLSearchParams({
-                    'idea': idea
-                })
             })
             .then(response => response.json())
             .then(data => {
