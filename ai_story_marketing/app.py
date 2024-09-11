@@ -126,7 +126,7 @@ def evaluate():
     if request.method == 'POST':
         choice = request.form.get('choice')
         if choice == 'continue':
-            return jsonify({"message": "Awesome! Let's create some marketing magic!", "next": "/market"})
+            return jsonify({"success": True, "message": "Awesome! Let's create some marketing magic!", "next": "/market"})
         elif choice == 'rewrite':
             session.pop('story', None)
             session.pop('evaluation', None)
@@ -188,7 +188,7 @@ def market():
 
     story = session.get('story')
     if not story:
-        return jsonify({"error": "Oops! We lost your story. Let's start over!", "next": "/"})
+       return jsonify({"success": False, "error": "Oops! We lost your story. Let's start over!", "next": "/"})
 
     try:
         # Time to figure out who will love our story! 🎭

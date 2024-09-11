@@ -1,31 +1,45 @@
-<!-- 📁 File: ai_story_marketing/ai_story_marketing/templates/evaluate.html -->
+<!-- 📁 File: ai_story_marketing/templates/evaluate.html -->
 
-{% extends "base.html" %}
-{% block content %}
+{% extends "base.html" %}  <!-- This tells Flask to use the base.html template as a starting point -->
+
+{% block content %}  <!-- This block will be inserted into the base template -->
+
+<!-- Main container for our page -->
 <div class="container mx-auto px-4 py-8">
+    <!-- White box to hold our content -->
     <div class="bg-white p-8 rounded-lg shadow-2xl">
-        <h1 class="text-4xl font-bold mb-8 text-center text-gray-800">🌟 Your Amazing Story</h1>
-        
-        <!-- Progress Tracking -->
+        <!-- Page title -->
+        <h1 class="text-4xl font-bold mb-8 text-center text-gray-800">
+            🌟 Your Amazing Story
+        </h1>
+
+        <!-- Progress section -->
         <div class="mb-6">
             <h2 class="text-2xl font-semibold mb-2 text-gray-700">Your Progress</h2>
+            
+            <!-- Progress bar -->
             <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
                 <div class="bg-blue-600 h-2.5 rounded-full" style="width: {{ (progress|length / 5) * 100 }}%"></div>
             </div>
+
+            <!-- List of progress steps -->
             {% for step in progress %}
-                <p>{% if step in progress %}✅{% else %}⏳{% endif %} {{ step|replace('_', ' ')|title }}</p>
+                <p>
+                    {% if step in progress %}✅{% else %}⏳{% endif %}
+                    {{ step|replace('_', ' ')|title }}
+                </p>
             {% endfor %}
         </div>
 
-        <!-- Story Display -->
+        <!-- Story section -->
         <div class="mb-6">
             <h2 class="text-2xl font-semibold mb-2 text-gray-700">📖 Your Story:</h2>
             <div class="markdown-content text-gray-600">
-                {{ story|safe }}
+                {{ story|safe }}  <!-- The 'safe' filter tells Flask it's okay to render HTML in this content -->
             </div>
         </div>
 
-        <!-- Evaluation Display -->
+        <!-- Evaluation section -->
         <div class="mb-6">
             <h2 class="text-2xl font-semibold mb-2 text-gray-700">🧐 Evaluation:</h2>
             <p><strong>Score:</strong> {{ evaluation.score }}/10</p>
@@ -34,63 +48,98 @@
             </div>
         </div>
 
-        <!-- Action Buttons -->
+        <!-- Buttons for user actions -->
         <div class="flex space-x-4">
-            <button onclick="continueProcess('continue')" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <!-- Continue to Marketing button -->
+            <button id="continue-btn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 Continue to Marketing! 🚀
             </button>
-            <button onclick="continueProcess('rewrite')" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
+
+            <!-- Rewrite Story button -->
+            <button id="rewrite-btn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                 Rewrite the Story 📝
             </button>
-            <button onclick="applyImprovements()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+
+            <!-- Apply Improvements button -->
+            <button id="improve-btn" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
                 Apply Improvements 🚀
             </button>
         </div>
 
+        <!-- Message area for feedback to the user -->
         <div id="message" class="mt-4 text-center text-sm font-medium"></div>
     </div>
 </div>
 
+<!-- Error Modal - Hidden by default -->
+<div id="error-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3 text-center">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                ❗ <!-- Error icon -->
+            </div>
+            <h3 class="text-lg font-medium text-gray-900">Oops! Something went wrong.</h3>
+            <div class="mt-2 px-7 py-3">
+                <p id="error-message" class="text-sm text-gray-500">
+                    <!-- Error message will be inserted here -->
+                </p>
+            </div>
+            <div class="items-center px-4 py-3">
+                <button id="close-modal" class="px-4 py-2 bg-red-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript to handle button clicks and show/hide the error modal -->
 <script>
-    function continueProcess(choice) {
+document.addEventListener('DOMContentLoaded', function() {
+    // Get references to our buttons and modal elements
+    const continueBtn = document.getElementById('continue-btn');
+    const rewriteBtn = document.getElementById('rewrite-btn');
+    const improveBtn = document.getElementById('improve-btn');
+    const errorModal = document.getElementById('error-modal');
+    const errorMessage = document.getElementById('error-message');
+    const closeModal = document.getElementById('close-modal');
+
+    // Function to handle button clicks
+    function handleButtonClick(choice) {
         fetch('/evaluate', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: JSON.stringify({choice: choice}),
+            body: 'choice=' + choice
         })
         .then(response => response.json())
         .then(data => {
-            if (data.error) {
-                document.getElementById('message').innerText = data.error;
+            if (data.success) {
+                // If successful, go to the next page
+                window.location.href = data.next;
             } else {
-                document.getElementById('message').innerText = data.message;
-                setTimeout(() => {
-                    window.location.href = data.next;
-                }, 1500);
+                // If there's an error, show it in the modal
+                throw new Error(data.error || 'An unknown error occurred');
             }
+        })
+        .catch(error => {
+            // Show the error modal with the error message
+            errorMessage.textContent = error.message;
+            errorModal.classList.remove('hidden');
         });
     }
 
-    function applyImprovements() {
-        fetch('/improve_story', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                document.getElementById('message').innerText = data.error;
-            } else {
-                document.getElementById('message').innerText = data.message;
-                setTimeout(() => {
-                    window.location.href = data.next;
-                }, 1500);
-            }
-        });
-    }
+    // Add click event listeners to our buttons
+    continueBtn.addEventListener('click', () => handleButtonClick('continue'));
+    rewriteBtn.addEventListener('click', () => handleButtonClick('rewrite'));
+    improveBtn.addEventListener('click', () => handleButtonClick('improve'));
+
+    // Add click event listener to close the error modal
+    closeModal.addEventListener('click', function() {
+        errorModal.classList.add('hidden');
+    });
+});
 </script>
+
 {% endblock %}
