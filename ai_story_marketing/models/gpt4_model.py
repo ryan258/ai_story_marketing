@@ -31,8 +31,18 @@ class GPT4Model:
         if not self.api_key:
             raise ValueError("Oops! We can't find the secret code (API key) to talk to GPT-4. 😕")
 
-        # Set up our telephone to GPT-4
-        self.client = OpenAI(api_key=self.api_key)
+        # We'll set up our telephone to GPT-4 later when we need it
+        self._client = None
+
+    @property
+    def client(self):
+        """
+        📞 This is our lazy way of setting up the telephone to GPT-4.
+        We only set it up when we really need it!
+        """
+        if self._client is None:
+            self._client = OpenAI(api_key=self.api_key)
+        return self._client
 
     def generate(self, prompt):
         """

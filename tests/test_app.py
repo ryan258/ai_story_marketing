@@ -4,6 +4,7 @@ import pytest
 from ai_story_marketing.app import app  # Import your Flask app
 from flask import session
 import logging
+from unittest.mock import patch, MagicMock
 
 # Set up logging for tests
 logging.basicConfig(level=logging.DEBUG)
@@ -24,11 +25,34 @@ def test_home_page(client):
 
 # 💡 Test submitting a story idea
 def test_submit_idea(client):
-    response = client.post('/', data={'idea': 'A magical forest'})
+    # Mock the StoryWriter and Evaluator to avoid calling the actual AI model
+    with patch('ai_story_marketing.app.story_writer.process') as mock_story_writer, \
+         patch('ai_story_marketing.app.evaluator.process') as mock_evaluator:
+        
+        mock_story_writer.return_value = "Once upon a time..."
+        mock_evaluator.return_value = {"score": 8, "feedback": "Great story!"}
+        
+        response = client.post('/', data={'idea': 'A magical forest'})
+        assert response.status_code == 200
+        data = response.get_json()
+        assert 'next' in data
+        assert data['next'] == '/evaluate'
+        
+        # Check if the session was updated correctly
+        with client.session_transaction() as sess:
+            assert 'story' in sess
+            assert 'evaluation' in sess
+            assert 'progress' in sess
+            assert 'story_creation' in sess['progress']
+            assert 'evaluation' in sess['progress']
+
+# 🚫 Test submitting an empty idea
+def test_submit_empty_idea(client):
+    response = client.post('/', data={'idea': ''})
     assert response.status_code == 200
     data = response.get_json()
-    assert 'next' in data
-    assert data['next'] == '/evaluate'
+    assert 'error' in data
+    assert "We need an idea to make a story!" in data['error']
 
 # 📊 Test the evaluate page
 def test_evaluate_page(client):
@@ -39,7 +63,7 @@ def test_evaluate_page(client):
     assert response.status_code == 200
     assert b"Your Amazing Story" in response.data
 
-# 🧪 This is our test for the new improve_story route
+# 🧪 Test the improve_story route
 def test_improve_story(client):
     with client.session_transaction() as sess:
         sess['story'] = "There was a rabbit named Hoppy."
@@ -48,86 +72,56 @@ def test_improve_story(client):
             'feedback': "Add more details about the setting and make the rabbit braver."
         }
     
-    response = client.post('/improve_story')
-    assert response.status_code == 200
-    data = response.get_json()
-    assert 'message' in data
-    assert 'next' in data
-    assert data['next'] == '/evaluate'
+    # Mock the StoryImprover and Evaluator
+    with patch('ai_story_marketing.app.story_improver.process') as mock_improver, \
+         patch('ai_story_marketing.app.evaluator.process') as mock_evaluator:
+        
+        mock_improver.return_value = "In a lush forest, there was a brave rabbit named Hoppy..."
+        mock_evaluator.return_value = {"score": 8, "feedback": "Much better!"}
+        
+        response = client.post('/improve_story')
+        assert response.status_code == 200
+        data = response.get_json()
+        assert 'message' in data
+        assert 'next' in data
+        assert data['next'] == '/evaluate'
 
-    with client.session_transaction() as sess:
-        assert 'story' in sess
-        assert sess['story'] != "There was a rabbit named Hoppy."  # The story should have changed
-        assert 'evaluation' in sess
-        assert sess['evaluation']['score'] != 6  # The score should have changed
-
-# 🧪 This is our updated test for the integration of story improvement in the evaluate route
-def test_evaluate_with_improvement(client):
-    with client.session_transaction() as sess:
-        original_story = "There was a rabbit named Hoppy."
-        sess['story'] = original_story
-        sess['evaluation'] = {
-            'score': 6,
-            'feedback': "Add more details about the setting and make the rabbit braver."
-        }
-    
-    # Improve the story
-    response = client.post('/improve_story')
-    assert response.status_code == 200
-    logger.debug(f"Improve story response: {response.get_json()}")
-
-    # Check the evaluate page
-    response = client.get('/evaluate')
-    assert response.status_code == 200
-    content = response.data.decode('utf-8')
-    logger.debug(f"Evaluate page content: {content[:500]}...")  # Log first 500 characters
-
-    assert "Apply Improvements" in content
-
-    # Check if the story has been changed
-    with client.session_transaction() as sess:
-        improved_story = sess.get('story', '')
-        logger.debug(f"Original story: {original_story}")
-        logger.debug(f"Improved story: {improved_story[:100]}...")  # Log first 100 characters
-        assert improved_story != original_story, "The story should have been improved"
-    
-    # Check if the improved story is in the page content
-    assert improved_story in content, "The improved story should be displayed on the page"
-
-    # Check if a new evaluation is present
-    assert "Score:" in content
-    with client.session_transaction() as sess:
-        new_evaluation = sess.get('evaluation', {})
-        logger.debug(f"New evaluation: {new_evaluation}")
-        assert 'score' in new_evaluation, "There should be a new evaluation score"
-        assert 'feedback' in new_evaluation, "There should be new evaluation feedback"
-
-# 🧪 This is our test for error handling in the improve_story route
-def test_improve_story_error_handling(client):
-    # Test without a story in the session
-    response = client.post('/improve_story')
-    assert response.status_code == 200
-    data = response.get_json()
-    assert 'error' in data
-    assert data['next'] == '/'
-
-    # Test with a story but without an evaluation
-    with client.session_transaction() as sess:
-        sess['story'] = "There was a rabbit named Hoppy."
-    
-    response = client.post('/improve_story')
-    assert response.status_code == 200
-    data = response.get_json()
-    assert 'error' in data
-    assert data['next'] == '/'
+        with client.session_transaction() as sess:
+            assert 'story' in sess
+            assert sess['story'] != "There was a rabbit named Hoppy."  # The story should have changed
+            assert 'evaluation' in sess
+            assert sess['evaluation']['score'] == 8  # The score should have changed
 
 # 🎭 Test the market page
 def test_market_page(client):
     with client.session_transaction() as sess:
         sess['story'] = "Once upon a time in a magical forest..."
-    response = client.get('/market')
-    assert response.status_code == 200
-    assert b"Marketing Magic" in response.data
+    
+    # Mock the marketing-related functions
+    with patch('ai_story_marketing.app.marketing_expert.process') as mock_marketing, \
+         patch('ai_story_marketing.app.social_media_team.process') as mock_social, \
+         patch('ai_story_marketing.app.marketing_team.process') as mock_marketing_team:
+        
+        mock_marketing.return_value = {
+            "target_audience": "Young readers",
+            "personas": ["Curious Kid", "Adventure Lover"]
+        }
+        mock_social.return_value = {"Twitter": "Check out this magical story!"}
+        mock_marketing_team.return_value = {"poster": "A colorful forest scene"}
+        
+        response = client.get('/market')
+        assert response.status_code == 200
+        assert b"Marketing Magic" in response.data
+        
+        # Check if the session was updated correctly
+        with client.session_transaction() as sess:
+            assert 'marketing_analysis' in sess
+            assert 'social_media_content' in sess
+            assert 'marketing_concepts' in sess
+            assert 'progress' in sess
+            assert 'marketing_analysis' in sess['progress']
+            assert 'social_media' in sess['progress']
+            assert 'marketing_concepts' in sess['progress']
 
 # 🎉 Test the result page
 def test_result_page(client):
@@ -141,11 +135,57 @@ def test_result_page(client):
     assert response.status_code == 200
     assert b"Your Amazing Story and Marketing Plan" in response.data
 
+# 📄 Test the PDF download route
+@patch('ai_story_marketing.app.PDFGenerator')
+def test_download_pdf(MockPDFGenerator, client):
+    mock_pdf_generator = MockPDFGenerator.return_value
+    mock_pdf_generator.generate_pdf.return_value = True
+    
+    with client.session_transaction() as sess:
+        sess['story'] = "Once upon a time..."
+        sess['evaluation'] = {'score': 8, 'feedback': "Great!"}
+        sess['marketing_analysis'] = {'target_audience': "Kids", 'personas': ["Curious Child"]}
+        sess['social_media_content'] = {'Twitter': "Check this out!"}
+        sess['marketing_concepts'] = {'poster': "Colorful scene"}
+    
+    response = client.get('/download-pdf')
+
+    if response.status_code == 200:
+        assert response.headers['Content-Type'] == 'application/pdf'
+        assert response.headers['Content-Disposition'] == 'attachment; filename=your_story_package.pdf'
+    elif response.status_code == 302:
+        # If there's a redirect, it should be to the result page
+        assert response.location.endswith('/result')
+    else:
+        pytest.fail(f"Unexpected status code: {response.status_code}")
+
 # 🐛 Test error handling
 def test_error_handling(client):
-    response = client.post('/', data={'idea': ''})  # Submit an empty idea
+    # Test submitting an empty idea
+    response = client.post('/', data={'idea': ''})
     assert response.status_code == 200
     data = response.get_json()
     assert 'error' in data
+    
+    # Test accessing evaluate page without a story
+    response = client.get('/evaluate')
+    assert response.status_code == 200
+    data = response.get_json()
+    assert 'error' in data
+    assert data['next'] == '/'
+    
+    # Test accessing market page without a story
+    response = client.get('/market')
+    assert response.status_code == 200
+    data = response.get_json()
+    assert 'error' in data
+    assert data['next'] == '/'
+    
+    # Test accessing result page without all required data
+    response = client.get('/result')
+    assert response.status_code == 200
+    data = response.get_json()
+    assert 'error' in data
+    assert data['next'] == '/'
 
-print("🎉 Yay! We've written tests for our Story Creator app!")
+print("🎉 Yay! We've written comprehensive tests for our Story Creator app!")

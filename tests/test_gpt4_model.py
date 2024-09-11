@@ -1,17 +1,21 @@
 # 📁 File: ai_story_marketing/tests/test_gpt4_model.py
 
 import pytest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from ai_story_marketing.models.gpt4_model import GPT4Model
 import os
 from dotenv import load_dotenv
 import re
 
-
 # Load environment variables from .env file
 load_dotenv()
 
 # 🧪 Test suite for the GPT4Model
+
+@pytest.fixture
+def mock_openai():
+    with patch('ai_story_marketing.models.gpt4_model.OpenAI') as mock:
+        yield mock
 
 def test_gpt4_model_initialization():
     """
@@ -34,12 +38,15 @@ def test_gpt4_model_initialization_no_api_key():
         with pytest.raises(ValueError, match=re.escape("Oops! We can't find the secret code (API key) to talk to GPT-4. 😕")):
             GPT4Model()
 
-def test_gpt4_model_generate_success():
+def test_gpt4_model_generate_success(mock_openai):
     """
     Test if the GPT4Model can successfully generate a story.
-    This test uses the actual API key and model name from .env file.
     """
-    # 🏗️ Create a GPT4Model instance
+    # 🏗️ Create a mock response
+    mock_response = MagicMock()
+    mock_response.choices = [MagicMock(message=MagicMock(content="Once upon a time, a brave little robot..."))]
+    mock_openai.return_value.chat.completions.create.return_value = mock_response
+
     gpt4 = GPT4Model()
     
     # 💡 Provide a story idea
@@ -48,41 +55,34 @@ def test_gpt4_model_generate_success():
     # 📝 Generate the story
     result = gpt4.generate(story_idea)
     
-    # 🔍 Check if we got a non-empty story
-    assert result is not None and result.strip() != "", "GPT-4 should generate a non-empty story"
-    
-    # 📏 Check if the generated story is of reasonable length (e.g., at least 100 characters)
-    assert len(result) >= 100, "Generated story should be of reasonable length"
-    
-    # 🧠 Check if the generated story includes elements from the original idea
-    assert "robot" in result.lower() or "adventure" in result.lower() or "forest" in result.lower(), \
-        "Generated story should include elements from the original idea"
+    # 🔍 Check if we got the expected story
+    assert result == "Once upon a time, a brave little robot...", "GPT-4 should generate the mocked story"
 
-def test_gpt4_model_generate_failure():
+def test_gpt4_model_generate_failure(mock_openai):
     """
     Test how the GPT4Model handles API errors.
     """
-    # 🏗️ Create a GPT4Model instance
-    gpt4 = GPT4Model()
-    
-    # 🚫 Simulate an API error by temporarily setting an invalid API key
-    with patch('openai.OpenAI') as mock_openai:
-        mock_openai.return_value.chat.completions.create.side_effect = Exception("API Error")
-        gpt4 = GPT4Model()
+    # 🚫 Simulate an API error
+    mock_openai.return_value.chat.completions.create.side_effect = Exception("API Error")
 
-        # 💡 Provide a story idea
-        story_idea = "A brave little robot goes on an adventure"
-        
-        # 📝 Attempt to generate the story
-        result = gpt4.generate(story_idea)
-        
-        # 🔍 Check if the result is None, indicating an error occurred
-        assert result is None, "GPT4Model should return None when an API error occurs"
+    gpt4 = GPT4Model()
+
+    # 💡 Provide a story idea
+    story_idea = "A brave little robot goes on an adventure"
+    
+    # 📝 Attempt to generate the story
+    result = gpt4.generate(story_idea)
+    
+    # 🔍 Check if the result is None, indicating an error occurred
+    assert result is None, "GPT4Model should return None when an API error occurs"
+
+    # Ensure the mock was called
+    mock_openai.return_value.chat.completions.create.assert_called_once()
 
 # 🏃‍♂️ Run the tests
 if __name__ == "__main__":
     pytest.main(['-v', __file__])
 
-# 🎉 Hooray! We've created comprehensive tests for our GPT4Model!
+# 🎉 Hooray! We've updated our tests for the GPT4Model!
 # These tests ensure our model initializes correctly, generates stories successfully,
 # and handles errors appropriately. 🚀

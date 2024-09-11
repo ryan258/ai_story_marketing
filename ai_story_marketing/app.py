@@ -290,7 +290,16 @@ def download_pdf():
         temp_filename = secure_filename(f"story_package_{int(time.time())}.pdf")
         pdf_path = os.path.join(temp_dir, temp_filename)
         
-        pdf_generator.generate_pdf(content, pdf_path)
+        try:
+            pdf_generator.generate_pdf(content, pdf_path)
+        except Exception as e:
+            logger.error(f"Error generating PDF: {str(e)}")
+            flash("Sorry, we couldn't create your PDF right now. Please try again later!", "error")
+            return redirect(url_for('result'))
+
+        if not os.path.exists(pdf_path):
+            raise FileNotFoundError(f"Generated PDF file not found: {pdf_path}")
+        
 
         # 📤 Now, let's send this PDF to be downloaded
         return send_file(pdf_path, as_attachment=True, download_name="your_story_package.pdf")
@@ -299,7 +308,7 @@ def download_pdf():
         # 😱 Oh no! Something went wrong
         logger.error(f"Error generating PDF: {str(e)}")
         flash("Sorry, we couldn't create your PDF right now. Please try again later!", "error")
-        return redirect(url_for('result'))
+        return redirect(url_for('result')), 302
 
     finally:
         # 🧹 Clean up the PDF file after sending
