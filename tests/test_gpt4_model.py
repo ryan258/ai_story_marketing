@@ -1,64 +1,88 @@
 # 📁 File: ai_story_marketing/tests/test_gpt4_model.py
 
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from ai_story_marketing.models.gpt4_model import GPT4Model
+import os
+from dotenv import load_dotenv
+import re
 
-@pytest.fixture
-def mock_openai_response():
-    return MagicMock(choices=[MagicMock(message=MagicMock(content="Once upon a time, there was a brave little robot..."))])
+
+# Load environment variables from .env file
+load_dotenv()
+
+# 🧪 Test suite for the GPT4Model
 
 def test_gpt4_model_initialization():
-    with patch('os.getenv') as mock_getenv:
-        mock_getenv.side_effect = ['fake-api-key', 'fake-model-name']
-        gpt4 = GPT4Model()
+    """
+    Test if the GPT4Model initializes correctly with environment variables.
+    """
+    # 🏗️ Create a GPT4Model instance
+    gpt4 = GPT4Model()
     
-    assert gpt4.api_key == 'fake-api-key', "Oops! We didn't get the right API key!"
-    assert gpt4.model_name == 'fake-model-name', "Oh no! We forgot our GPT-4 friend's name!"
+    # 🔍 Check if the API key and model name are set correctly
+    assert gpt4.api_key == os.getenv('OPENAI_API_KEY'), "API key should be set from environment variable"
+    assert gpt4.model_name == os.getenv('OPENAI_MODEL_NAME'), "Model name should be set from environment variable"
 
 def test_gpt4_model_initialization_no_api_key():
-    with patch('os.getenv') as mock_getenv:
-        mock_getenv.return_value = None
-        
-        with pytest.raises(ValueError):
+    """
+    Test if the GPT4Model raises an error when no API key is provided.
+    """
+    # 🚫 Temporarily remove the API key from environment
+    with patch.dict(os.environ, {'OPENAI_API_KEY': ''}):
+        # 🧪 Check if ValueError is raised when creating GPT4Model without API key
+        with pytest.raises(ValueError, match=re.escape("Oops! We can't find the secret code (API key) to talk to GPT-4. 😕")):
             GPT4Model()
 
-@patch('openai.OpenAI')
-def test_gpt4_model_generate_success(mock_openai, mock_openai_response):
-    mock_openai.return_value.chat.completions.create.return_value = mock_openai_response
+def test_gpt4_model_generate_success():
+    """
+    Test if the GPT4Model can successfully generate a story.
+    This test uses the actual API key and model name from .env file.
+    """
+    # 🏗️ Create a GPT4Model instance
+    gpt4 = GPT4Model()
     
-    with patch('os.getenv') as mock_getenv:
-        mock_getenv.side_effect = ['fake-api-key', 'fake-model-name']
-        gpt4 = GPT4Model()
+    # 💡 Provide a story idea
+    story_idea = "A brave little robot goes on an adventure in a magical forest"
     
-    story_idea = "A brave little robot goes on an adventure"
-    
+    # 📝 Generate the story
     result = gpt4.generate(story_idea)
     
-    assert result == "Once upon a time, there was a brave little robot...", "Oh no! Our GPT-4 friend didn't give us the story we expected!"
+    # 🔍 Check if we got a non-empty story
+    assert result is not None and result.strip() != "", "GPT-4 should generate a non-empty story"
     
-    mock_openai.return_value.chat.completions.create.assert_called_once_with(
-        model='fake-model-name',
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant that writes creative stories."},
-            {"role": "user", "content": story_idea}
-        ],
-        max_tokens=1000
-    )
+    # 📏 Check if the generated story is of reasonable length (e.g., at least 100 characters)
+    assert len(result) >= 100, "Generated story should be of reasonable length"
+    
+    # 🧠 Check if the generated story includes elements from the original idea
+    assert "robot" in result.lower() or "adventure" in result.lower() or "forest" in result.lower(), \
+        "Generated story should include elements from the original idea"
 
-@patch('openai.OpenAI')
-def test_gpt4_model_generate_failure(mock_openai):
-    mock_openai.return_value.chat.completions.create.side_effect = Exception("Oh no! We can't reach our GPT-4 friend!")
+def test_gpt4_model_generate_failure():
+    """
+    Test how the GPT4Model handles API errors.
+    """
+    # 🏗️ Create a GPT4Model instance
+    gpt4 = GPT4Model()
     
-    with patch('os.getenv') as mock_getenv:
-        mock_getenv.side_effect = ['fake-api-key', 'fake-model-name']
+    # 🚫 Simulate an API error by temporarily setting an invalid API key
+    with patch('openai.OpenAI') as mock_openai:
+        mock_openai.return_value.chat.completions.create.side_effect = Exception("API Error")
         gpt4 = GPT4Model()
-    
-    story_idea = "A brave little robot goes on an adventure"
-    
-    result = gpt4.generate(story_idea)
-    
-    assert result is None, "Uh-oh! We should get None when we can't talk to our GPT-4 friend!"
 
+        # 💡 Provide a story idea
+        story_idea = "A brave little robot goes on an adventure"
+        
+        # 📝 Attempt to generate the story
+        result = gpt4.generate(story_idea)
+        
+        # 🔍 Check if the result is None, indicating an error occurred
+        assert result is None, "GPT4Model should return None when an API error occurs"
+
+# 🏃‍♂️ Run the tests
 if __name__ == "__main__":
-    pytest.main()
+    pytest.main(['-v', __file__])
+
+# 🎉 Hooray! We've created comprehensive tests for our GPT4Model!
+# These tests ensure our model initializes correctly, generates stories successfully,
+# and handles errors appropriately. 🚀

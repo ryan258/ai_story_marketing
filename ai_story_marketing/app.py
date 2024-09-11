@@ -17,6 +17,7 @@ from werkzeug.utils import secure_filename
 # Import our special AI agents 🤖
 from .agents.story_writer import StoryWriter
 from .agents.evaluator import Evaluator
+from .agents.story_improver import StoryImprover  # New import for our StoryImprover
 from .agents.marketing_expert import MarketingExpert
 from .agents.social_media_team import SocialMediaTeam
 from .agents.marketing_team import MarketingTeam
@@ -34,7 +35,7 @@ from .utils.pdf_generator import PDFGenerator
 load_dotenv()  # This loads all our secret codes from a special file
 
 # Set up our magical app log 📜✨
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 # Now, let's create our Flask app - it's like a magic wand for websites! 🪄
@@ -47,6 +48,7 @@ Session(app)  # This turns on the remembering power!
 ai_model_name = os.getenv('AI_MODEL', 'llama')
 logger.info(f"Using AI model: {ai_model_name}")
 
+# Create the appropriate AI model based on the configuration
 if ai_model_name == 'llama':
     model = LlamaModel()
 elif ai_model_name == 'gpt4':
@@ -59,6 +61,7 @@ else:
 # Let's create all our special story-making friends 🧙‍♂️👥
 story_writer = StoryWriter(model)
 evaluator = Evaluator(model)
+story_improver = StoryImprover(model)  # Our new StoryImprover agent
 marketing_expert = MarketingExpert(model)
 social_media_team = SocialMediaTeam(model)
 marketing_team = MarketingTeam(model)
@@ -125,18 +128,56 @@ def evaluate():
         if choice == 'continue':
             return jsonify({"message": "Awesome! Let's create some marketing magic!", "next": "/market"})
         elif choice == 'rewrite':
-            # They want a new story! Let's clear the old one and start over.
             session.pop('story', None)
             session.pop('evaluation', None)
-            session['progress'] = []  # 🏃‍♂️ Let's reset our progress too!
+            session['progress'] = []
             return jsonify({"message": "No problem! Let's try again with a new story.", "next": "/"})
 
-    story = convert_markdown_to_html(session.get('story', ''))
+    story = session.get('story', '')
     evaluation = session.get('evaluation')
+    logger.debug(f"Story for evaluation: {story[:50]}...")
+    logger.debug(f"Evaluation: {evaluation}")
+    
     if not story or not evaluation:
+        logger.warning("Story or evaluation missing from session in evaluate route")
         return jsonify({"error": "Oops! We lost your story. Let's start over!", "next": "/"})
-    evaluation['feedback'] = convert_markdown_to_html(evaluation.get('feedback', ''))
-    return render_template('evaluate.html', story=story, evaluation=evaluation, progress=session.get('progress', []))
+    
+    return render_template('evaluate.html', 
+                           story=story, 
+                           evaluation=evaluation, 
+                           progress=session.get('progress', []))
+
+@app.route('/improve_story', methods=['POST'])
+def improve_story():
+    story = session.get('story')
+    evaluation = session.get('evaluation')
+    
+    logger.debug(f"Original story: {story[:50] if story else 'None'}...")
+    logger.debug(f"Original evaluation: {evaluation}")
+    
+    if not story or not evaluation:
+        logger.warning("Story or evaluation missing from session")
+        return jsonify({"error": "Oops! We lost your story or evaluation. Let's start over!", "next": "/"})
+    
+    try:
+        improved_story = story_improver.process(story, evaluation['feedback'])
+        logger.debug(f"Improved story: {improved_story[:50]}...")
+        
+        session['story'] = improved_story
+        new_evaluation = evaluator.process(improved_story)
+        logger.debug(f"New evaluation: {new_evaluation}")
+        session['evaluation'] = new_evaluation
+        
+        track_progress(session, 'story_improvement')
+        
+        return jsonify({
+            "message": "Great! We've improved your story. Let's see how it looks now!",
+            "next": "/evaluate"
+        })
+    
+    except Exception as e:
+        logger.error(f"Error in story improvement process: {str(e)}", exc_info=True)
+        return jsonify({"error": f"Oh no! Our story improver got confused: {str(e)}"})
 
 # This is where we figure out who will love our story! 🎭
 @app.route('/market', methods=['GET', 'POST'])

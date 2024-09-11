@@ -24,7 +24,7 @@ class GPT4Model:
         We're getting the secret code (API key) and the name of our AI friend from our secret information.
         """
         # Get our secret API key and model name from the secret codes
-        self.api_key = os.getenv('OPENAI_API_KEY')
+        self.api_key = os.environ.get('OPENAI_API_KEY')
         self.model_name = os.getenv('OPENAI_MODEL_NAME')
 
         # Check if we have our secret API key
@@ -61,5 +61,5 @@ class GPT4Model:
         
         except Exception as e:
             # 😟 Uh-oh, something went wrong when talking to our GPT-4 friend
-            logger.error(f"Oops! We couldn't talk to our GPT-4 friend. Here's what happened: {e}")
+            logger.error(f"Oops! We couldn't talk to our GPT-4 friend. Here's what happened: {str(e)}")
             return None
