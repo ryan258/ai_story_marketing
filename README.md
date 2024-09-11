@@ -1,3 +1,5 @@
+# 📁 File: README.md
+
 # 🚀 AI-Driven Story Creation and Marketing System
 
 Welcome to our AI-Driven Story Creation and Marketing System! This project takes a simple idea input and generates a comprehensive story and marketing package using a chain of AI agents.
@@ -6,9 +8,9 @@ Welcome to our AI-Driven Story Creation and Marketing System! This project takes
 
 - 📝 Story creation from a simple idea input
 - 🧐 Story evaluation and improvement
+- 🚀 Iterative story improvement  # New feature: StoryImprover
 - 🎭 Marketing persona creation
 - 📱 Social media content generation
-- 🚀 Iterative story improvement
 - 🎨 Marketing concept creation
 - 🏃‍♂️ Progress tracking
 - 📝 Markdown rendering for all generated content
@@ -127,6 +129,7 @@ ai_story_marketing/
 │   │   ├── base_agent.py
 │   │   ├── story_writer.py
 │   │   ├── evaluator.py
+│   │   ├── story_improver.py  # New file for StoryImprover agent
 │   │   ├── marketing_expert.py
 │   │   ├── social_media_team.py
 │   │   └── marketing_team.py
