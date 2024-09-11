@@ -5,7 +5,7 @@ Welcome to our AI-Driven Story Creation and Marketing System! This project takes
 ## ✨ Features
 
 - 📝 Story creation from a simple idea input
-- 🧐 Story evaluation
+- 🧐 Story evaluation and improvement
 - 🎭 Marketing persona creation
 - 📱 Social media content generation
 - 🚀 Iterative story improvement
@@ -13,17 +13,20 @@ Welcome to our AI-Driven Story Creation and Marketing System! This project takes
 - 🏃‍♂️ Progress tracking
 - 📝 Markdown rendering for all generated content
 - 📊 Comprehensive output generation
+- 🔄 Support for multiple AI models (Llama, GPT-4, and Claude)
+- 📄 PDF generation of the final output
 
 ## 🛠️ Technology Stack
 
 - Backend: Python 🐍
 - Web Framework: Flask 🌶️
 - Frontend: HTML, TailwindCSS 🎨
-- AI Model: LlamaModel (simplified version for educational purposes) 🦙
+- AI Models: LlamaModel, GPT4Model, ClaudeModel 🦙🤖🧠
 - Testing: pytest 🧪
 - Project Management: Poetry 📦
 - Markdown Processing: Python-Markdown 📝
 - Environment Variable Management: python-dotenv 🔐
+- PDF Generation: ReportLab 📄
 
 ## 🏗️ Setup
 
@@ -43,7 +46,44 @@ Welcome to our AI-Driven Story Creation and Marketing System! This project takes
    ```
 5. Set up environment variables:
    - Copy `.env.example` to `.env`
-   - Fill in any required API keys or configuration values
+   - Fill in the required API keys and configuration values
+
+## 🔄 Switching Between AI Models
+
+This project supports three AI models: Llama, GPT-4, and Claude. Here's how to switch between them:
+
+### Using Llama
+
+1. Open your `.env` file.
+2. Set the following variables:
+   ```
+   AI_MODEL=llama
+   API_URL=http://localhost:11434/api/generate
+   MODEL_NAME=llama3.1:latest
+   ```
+3. Make sure you have Ollama installed and running locally.
+
+### Using GPT-4
+
+1. Open your `.env` file.
+2. Set the following variables:
+   ```
+   AI_MODEL=gpt4
+   OPENAI_MODEL_NAME=gpt-4o-mini-2024-07-18
+   OPENAI_API_KEY=your-openai-api-key-here
+   ```
+3. Replace `your-openai-api-key-here` with your actual OpenAI API key.
+
+### Using Claude
+
+1. Open your `.env` file.
+2. Set the following variables:
+   ```
+   AI_MODEL=claude
+   ANTHROPIC_API_KEY=your-anthropic-api-key-here
+   ANTHROPIC_MODEL_NAME=claude-3-opus-20240229
+   ```
+3. Replace `your-anthropic-api-key-here` with your actual Anthropic API key.
 
 ## 🚀 Running the Application
 
@@ -53,7 +93,7 @@ Welcome to our AI-Driven Story Creation and Marketing System! This project takes
    ```
 2. Run the Flask application:
    ```
-   python ai_story_marketing/app.py
+   python -m ai_story_marketing.app
    ```
 3. Open a web browser and navigate to `http://127.0.0.1:5000`
 
@@ -92,16 +132,20 @@ ai_story_marketing/
 │   │   └── marketing_team.py
 │   ├── models/
 │   │   ├── __init__.py
-│   │   └── llama_model.py
+│   │   ├── llama_model.py
+│   │   ├── gpt4_model.py
+│   │   └── claude_model.py
 │   ├── templates/
+│   │   ├── base.html
 │   │   ├── home.html
 │   │   ├── evaluate.html
 │   │   ├── market.html
 │   │   └── result.html
 │   └── utils/
 │       ├── __init__.py
-        ├── context_manager.py
-│       └── output_generator.py
+│       ├── context_manager.py
+│       ├── output_generator.py
+│       └── pdf_generator.py
 └── tests/
     ├── __init__.py
     ├── test_app.py
@@ -110,7 +154,9 @@ ai_story_marketing/
     ├── test_marketing_team.py
     ├── test_social_media_team.py
     ├── test_progress_tracking.py
-    └── test_llama_model.py
+    ├── test_llama_model.py
+    ├── test_gpt4_model.py
+    └── test_claude_model.py
 ```
 
 ## 👥 Contributing

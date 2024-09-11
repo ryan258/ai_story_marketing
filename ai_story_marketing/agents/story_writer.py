@@ -3,8 +3,9 @@
 # 🧙‍♂️ Welcome to the StoryWriter agent! 📚
 # This magical agent turns ideas into amazing stories and helps improve them! ✨
 
-from .base_agent import BaseAgent
-import logging
+# First, let's import what we need
+from .base_agent import BaseAgent  # We're using the basic structure from BaseAgent
+import logging  # This helps us keep track of what's happening
 
 # Set up our magical storytelling log 📜✨
 logging.basicConfig(level=logging.INFO)
@@ -23,7 +24,7 @@ class StoryWriter(BaseAgent):
             model: The AI model that gives our StoryWriter its creativity
         """
         super().__init__(model)  # We're using the setup from our BaseAgent
-        self.story = ""  # Where we'll keep our story
+        self.story = ""  # This is where we'll keep our story
 
     def process(self, idea):
         """
@@ -40,7 +41,8 @@ class StoryWriter(BaseAgent):
         # Let's create a prompt for our AI to write the story
         prompt = self.format_prompt(
             "Write a short, engaging story based on this idea: {idea}. "
-            "Include interesting characters, a clear plot, and vivid descriptions.",
+            "Include interesting characters, a clear plot, and vivid descriptions. "
+            "The story should be at least 200 words long.",
             idea=idea
         )
 
@@ -51,16 +53,21 @@ class StoryWriter(BaseAgent):
             # 🕵️‍♂️ Let's check if our AI gave us a good story
             if not response:
                 logger.warning("😴 Our AI returned an empty response.")
-                return "Our storyteller is taking a nap. Try again later!"
+                return None
 
             # Yay! We got a story!
             self.story = response.strip()
-            logger.info(f"✨ Wow! We created a story with {len(self.story)} characters!")
+            word_count = len(self.story.split())
+            logger.info(f"✨ Wow! We created a story with {word_count} words!")
+            
+            if word_count < 200:
+                logger.warning(f"Story is shorter than expected ({word_count} words)")
+            
             return self.story
 
         except Exception as e:
             logger.error(f"🚨 An error occurred while creating the story: {str(e)}")
-            return "Oops! Our storyteller got confused. Let's try again!"
+            return None
 
     def improve_story(self, feedback):
         """
@@ -94,7 +101,7 @@ class StoryWriter(BaseAgent):
 
             # Yay! We got an improved story!
             self.story = response.strip()
-            logger.info(f"✨ Wow! We improved our story! It now has {len(self.story)} characters!")
+            logger.info(f"✨ Wow! We improved our story! It now has {len(self.story.split())} words!")
             return self.story
 
         except Exception as e:

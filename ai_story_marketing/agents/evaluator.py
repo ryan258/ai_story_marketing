@@ -3,9 +3,14 @@
 # 🧐 Welcome to the Evaluator agent! 🏆
 # This clever agent will judge the quality of our stories and help improve them! 📊
 
-from .base_agent import BaseAgent  # We're using the superhero costume we made earlier!
-import logging
-import re
+# First, let's import what we need
+from .base_agent import BaseAgent  # We're using the basic structure from BaseAgent
+import logging  # This helps us keep track of what's happening
+import re  # This helps us find patterns in text
+
+# Set up our magical evaluation log 📜✨
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class Evaluator(BaseAgent):
     """
@@ -23,7 +28,6 @@ class Evaluator(BaseAgent):
         super().__init__(model)  # We're using the setup from our BaseAgent
         self.score = 0  # This is where we'll keep the story's score
         self.feedback = ""  # This is where we'll keep the feedback for the story
-        self.logger = logging.getLogger(__name__)  # This helps us keep track of what's happening
 
     def process(self, story):
         """
@@ -35,6 +39,13 @@ class Evaluator(BaseAgent):
         Returns:
             dict: A dictionary containing the score and feedback for the story
         """
+        if not story:
+            logger.warning("Received an empty story to evaluate")
+            return {
+                "score": 0,
+                "feedback": "We couldn't evaluate the story because it was empty. Let's try creating a new story!"
+            }
+
         # Let's create a prompt for our AI to evaluate the story
         prompt = self.format_prompt(
             "Evaluate the following story on a scale from 1 to 10, where 10 is excellent. "
@@ -46,7 +57,7 @@ class Evaluator(BaseAgent):
         
         # Now, let's ask our AI to evaluate the story
         evaluation = self.generate_text(prompt)
-        self.logger.info(f"Raw evaluation: {evaluation}")
+        logger.info(f"Raw evaluation: {evaluation}")
 
         try:
             if evaluation:
@@ -55,8 +66,8 @@ class Evaluator(BaseAgent):
                 if score_match:
                     self.score = float(score_match.group(1))
                 else:
-                    self.score = 8.0  # Default score if no score is found
-                    self.logger.warning("Could not find a score in the evaluation. Using default score of 8.0.")
+                    self.score = 5.0  # Default score if no score is found
+                    logger.warning("Could not find a score in the evaluation. Using default score of 5.0.")
 
                 # Everything else is considered feedback
                 self.feedback = evaluation.strip()
@@ -64,13 +75,12 @@ class Evaluator(BaseAgent):
                 raise ValueError("Empty evaluation received")
 
         except Exception as e:
-            self.logger.error(f"Error processing evaluation: {e}")
-            self.logger.error(f"Evaluation content: {evaluation}")
+            logger.error(f"Error processing evaluation: {e}")
+            logger.error(f"Evaluation content: {evaluation}")
             # Provide a default evaluation
-            self.score = 8.0
-            self.feedback = ("The story is imaginative and engaging. Consider expanding on character development "
-                             "and adding more details to the setting to make it even more immersive. "
-                             "Overall, it's a good start with potential for further improvement.")
+            self.score = 5.0
+            self.feedback = ("We couldn't properly evaluate the story this time. "
+                             "Consider adding more details to the characters and plot to make it more engaging.")
         
         # Let's remember this evaluation in our magical backpack (context)
         self.update_context({

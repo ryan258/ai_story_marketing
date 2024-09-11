@@ -12,15 +12,23 @@ from dotenv import load_dotenv
 import markdown
 import logging
 import tempfile
+from werkzeug.utils import secure_filename
+
+# Import our special AI agents 🤖
 from .agents.story_writer import StoryWriter
 from .agents.evaluator import Evaluator
 from .agents.marketing_expert import MarketingExpert
 from .agents.social_media_team import SocialMediaTeam
 from .agents.marketing_team import MarketingTeam
+
+# Import our AI models 🧠
 from .models.llama_model import LlamaModel
+from .models.gpt4_model import GPT4Model
+from .models.claude_model import ClaudeModel
+
+# Import our helpful utilities 🛠️
 from .utils.output_generator import OutputGenerator
 from .utils.pdf_generator import PDFGenerator
-from werkzeug.utils import secure_filename
 
 # Let's set up our app's secret hideout 🕵️‍♂️
 load_dotenv()  # This loads all our secret codes from a special file
@@ -35,8 +43,20 @@ app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'my_secret_key')  # Thi
 app.config['SESSION_TYPE'] = 'filesystem'  # This tells our app to remember things even when we close it
 Session(app)  # This turns on the remembering power!
 
+# Let's choose which AI brain we want to use 🧠
+ai_model_name = os.getenv('AI_MODEL', 'llama')
+logger.info(f"Using AI model: {ai_model_name}")
+
+if ai_model_name == 'llama':
+    model = LlamaModel()
+elif ai_model_name == 'gpt4':
+    model = GPT4Model()
+elif ai_model_name == 'claude':
+    model = ClaudeModel()
+else:
+    raise ValueError(f"Unsupported AI model: {ai_model_name}")
+
 # Let's create all our special story-making friends 🧙‍♂️👥
-model = LlamaModel()  # This is our magical AI brain
 story_writer = StoryWriter(model)
 evaluator = Evaluator(model)
 marketing_expert = MarketingExpert(model)
@@ -46,7 +66,7 @@ marketing_team = MarketingTeam(model)
 # And let's not forget our magical notebook to write everything down 📓
 output_generator = OutputGenerator()
 
-# 🏃‍♂️ This is our new function to keep track of our progress!
+# 🏃‍♂️ This is our function to keep track of our progress!
 def track_progress(session, step):
     if 'progress' not in session:
         session['progress'] = []
@@ -72,24 +92,16 @@ def home():
 
         try:
             # Time to create our story! 📚
+            logger.info(f"Generating story for idea: {idea}")
             story = story_writer.process(idea)
             
-            # Now, let's evaluate and improve our story until it's great! 🔄
-            attempts = 0
-            max_attempts = 5  # Let's limit the number of improvement attempts
-            
-            while attempts < max_attempts:
-                evaluation = evaluator.process(story)
-                score = evaluation['score']
-                feedback = evaluation['feedback']
-                logger.info(f"Evaluation result: Score {score}, Feedback: {feedback}")
-                
-                if score >= 8:
-                    break  # Yay! Our story is great!
-                
-                # Let's try to improve our story
-                story = story_writer.improve_story(feedback)
-                attempts += 1
+            if not story:
+                logger.error("Story generation failed")
+                return jsonify({"error": "Oh no! Our story machine couldn't create a story this time. Please try again!"})
+
+            # Now, let's evaluate our story! 🔄
+            logger.info("Evaluating story")
+            evaluation = evaluator.process(story)
             
             session['story'] = story
             session['evaluation'] = evaluation
@@ -140,6 +152,7 @@ def market():
     try:
         # Time to figure out who will love our story! 🎭
         marketing_analysis = marketing_expert.process(story)
+        logger.info(f"Marketing analysis result: {marketing_analysis}")
         
         # Convert Markdown to HTML for marketing analysis
         marketing_analysis['target_audience'] = convert_markdown_to_html(marketing_analysis['target_audience'])
@@ -243,7 +256,7 @@ def download_pdf():
 
     except Exception as e:
         # 😱 Oh no! Something went wrong
-        app.logger.error(f"Error generating PDF: {str(e)}")
+        logger.error(f"Error generating PDF: {str(e)}")
         flash("Sorry, we couldn't create your PDF right now. Please try again later!", "error")
         return redirect(url_for('result'))
 
@@ -260,7 +273,7 @@ def download_pdf():
                     if attempt < max_attempts - 1:
                         time.sleep(0.1)  # Wait a bit before trying again
                     else:
-                        app.logger.warning(f"Failed to delete temporary PDF file: {path}")
+                        logger.warning(f"Failed to delete temporary PDF file: {path}")
 
         # Schedule the cleanup to run after the response has been sent
         @after_this_request
