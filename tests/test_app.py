@@ -1,7 +1,7 @@
 # 📁 File: ai_story_marketing/tests/test_app.py
 
 import pytest
-from ai_story_marketing.app import app  # Import your Flask app
+from ai_story_marketing.app import app, story_improver, evaluator  # Import your Flask app
 from flask import session
 import logging
 from unittest.mock import patch, MagicMock
@@ -62,6 +62,65 @@ def test_evaluate_page(client):
     response = client.get('/evaluate')
     assert response.status_code == 200
     assert b"Your Amazing Story" in response.data
+
+# 🧪 Test the continue action on the evaluate page
+def test_evaluate_continue(client):
+    with client.session_transaction() as sess:
+        sess['story'] = "Once upon a time..."
+        sess['evaluation'] = {'score': 8, 'feedback': "Great story!"}
+    
+    response = client.post('/evaluate', json={'choice': 'continue'})
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data['success'] == True
+    assert data['next'] == '/market'
+
+# 🧪 Test the rewrite action on the evaluate page
+def test_evaluate_rewrite(client):
+    with client.session_transaction() as sess:
+        sess['story'] = "Once upon a time..."
+        sess['evaluation'] = {'score': 8, 'feedback': "Great story!"}
+        sess['progress'] = ['story_creation', 'evaluation']
+    
+    response = client.post('/evaluate', json={'choice': 'rewrite'})
+    assert response.status_code == 200
+    data = response.get_json()
+    assert 'message' in data
+    assert data['next'] == '/'
+    
+    with client.session_transaction() as sess:
+        assert 'story' not in sess
+        assert 'evaluation' not in sess
+        assert sess['progress'] == []
+
+# 🧪 Test the improve story action
+@patch('ai_story_marketing.app.story_improver.process')
+@patch('ai_story_marketing.app.evaluator.process')
+def test_improve_story(mock_evaluator, mock_improver, client):
+    mock_improver.return_value = "Once upon a time, in a magical forest..."
+    mock_evaluator.return_value = {'score': 9, 'feedback': "Even better!"}
+    
+    with client.session_transaction() as sess:
+        sess['story'] = "There was a rabbit named Hoppy."
+        sess['evaluation'] = {'score': 7, 'feedback': "Needs more detail."}
+    
+    response = client.post('/improve_story', json={})
+    assert response.status_code == 200
+    data = response.get_json()
+    assert 'message' in data
+    assert data['next'] == '/evaluate'
+    
+    with client.session_transaction() as sess:
+        assert sess['story'] == "Once upon a time, in a magical forest..."
+        assert sess['evaluation']['score'] == 9
+        assert 'story_improvement' in sess['progress']
+
+# 🧪 Test improve story with missing data
+def test_improve_story_missing_data(client):
+    response = client.post('/improve_story', json={})
+    assert response.status_code == 200
+    assert response.get_json()['error'] == "Oops! We lost your story or evaluation. Let's start over!"
+
 
 # 🧪 Test the improve_story route
 def test_improve_story(client):

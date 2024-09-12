@@ -124,7 +124,7 @@ def home():
 @app.route('/evaluate', methods=['GET', 'POST'])
 def evaluate():
     if request.method == 'POST':
-        choice = request.form.get('choice')
+        choice = request.json.get('choice')
         if choice == 'continue':
             return jsonify({"success": True, "message": "Awesome! Let's create some marketing magic!", "next": "/market"})
         elif choice == 'rewrite':
