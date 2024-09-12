@@ -4,8 +4,9 @@
 # This is where all the magic happens to turn your ideas into amazing stories!
 
 # First, let's import all the tools we need 🧰
-from flask import Flask, render_template, request, jsonify, session, send_file, flash, redirect, url_for, after_this_request
-from flask_session import Session
+from flask import Flask, render_template, request, jsonify, send_file, flash, redirect, url_for, after_this_request, session
+from flask.sessions import SessionInterface  # This helps us create our own way to remember things
+from cachelib import FileSystemCache  # This is our new tool to store memories
 import os
 import time
 from dotenv import load_dotenv
@@ -17,7 +18,7 @@ from werkzeug.utils import secure_filename
 # Import our special AI agents 🤖
 from .agents.story_writer import StoryWriter
 from .agents.evaluator import Evaluator
-from .agents.story_improver import StoryImprover  # New import for our StoryImprover
+from .agents.story_improver import StoryImprover
 from .agents.marketing_expert import MarketingExpert
 from .agents.social_media_team import SocialMediaTeam
 from .agents.marketing_team import MarketingTeam
@@ -41,8 +42,34 @@ logger = logging.getLogger(__name__)
 # Now, let's create our Flask app - it's like a magic wand for websites! 🪄
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'my_secret_key')  # This is like a secret password for our app
-app.config['SESSION_TYPE'] = 'filesystem'  # This tells our app to remember things even when we close it
-Session(app)  # This turns on the remembering power!
+app.config['SESSION_COOKIE_NAME'] = 'ai_story_session'  # This is the name of our special remember-me cookie
+
+# 🧠 Let's set up our new way to remember things!
+cache = FileSystemCache('/tmp/flask_session', threshold=500, default_timeout=60*60*24*7)
+
+# This is our special way to remember things about each person using our app
+class CachingSessionInterface(SessionInterface):
+    def open_session(self, app, request):
+        # When someone uses our app, we try to remember them
+        sid = request.cookies.get(app.config['SESSION_COOKIE_NAME'])
+        if sid:
+            return cache.get(sid) or {}
+        return {}
+
+    def save_session(self, app, session, response):
+        # We save what we need to remember about this person
+        domain = self.get_cookie_domain(app)
+        path = self.get_cookie_path(app)
+        if session:
+            if 'sid' not in session:
+                session['sid'] = os.urandom(16).hex()
+            cache.set(session['sid'], dict(session))
+            response.set_cookie(app.config['SESSION_COOKIE_NAME'], session['sid'],
+                                httponly=True, secure=self.get_cookie_secure(app),
+                                domain=domain, path=path)
+
+# We tell our app to use this special way of remembering
+app.session_interface = CachingSessionInterface()
 
 # Let's choose which AI brain we want to use 🧠
 ai_model_name = os.getenv('AI_MODEL', 'llama')
@@ -61,7 +88,7 @@ else:
 # Let's create all our special story-making friends 🧙‍♂️👥
 story_writer = StoryWriter(model)
 evaluator = Evaluator(model)
-story_improver = StoryImprover(model)  # Our new StoryImprover agent
+story_improver = StoryImprover(model)
 marketing_expert = MarketingExpert(model)
 social_media_team = SocialMediaTeam(model)
 marketing_team = MarketingTeam(model)
@@ -298,9 +325,11 @@ def download_pdf():
             return redirect(url_for('result'))
 
         if not os.path.exists(pdf_path):
+            raise FileNotFoundError
+        
+        if not os.path.exists(pdf_path):
             raise FileNotFoundError(f"Generated PDF file not found: {pdf_path}")
         
-
         # 📤 Now, let's send this PDF to be downloaded
         return send_file(pdf_path, as_attachment=True, download_name="your_story_package.pdf")
 

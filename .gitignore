@@ -1,4 +1,10 @@
 .env
 .DS_Store
 __pycache__
+*/__pycache__/*
 flask_session
+poetry.lock
+*.cpython-311.pyc
+ai_story_marketing/agents/__pycache__/evaluator.cpython-311.pyc
+ai_story_marketing/agents/__pycache__/marketing_expert.cpython-311.pyc
+tests/__pycache__/*
