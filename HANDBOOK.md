@@ -27,6 +27,8 @@ By the end of this course, students will be able to:
 - Understand the basics of web applications and servers
 - Develop creative writing skills with AI assistance
 - Learn about marketing and social media concepts
+- Compare different AI models (Llama, GPT-4, Claude)
+- Generate and download PDF reports
 
 ## 3. Prerequisite Knowledge
 
@@ -47,11 +49,13 @@ No prior programming experience is required, but an interest in technology and s
 6. Developing the Marketing Expert Agent (2 sessions)
 7. Creating the Social Media Team Agent (2 sessions)
 8. Building the Marketing Team Agent (2 sessions)
-9. Putting It All Together: The Main Application (3 sessions)
-10. Testing and Debugging (2 sessions)
-11. Final Project Showcase (1 session)
+9. Integrating Multiple AI Models (2 sessions)
+10. Generating and Downloading PDFs (1 session)
+11. Putting It All Together: The Main Application (3 sessions)
+12. Testing and Debugging (2 sessions)
+13. Final Project Showcase (1 session)
 
-Total: 20 sessions (adjust as needed for your class schedule)
+Total: 23 sessions (adjust as needed for your class schedule)
 
 ## 5. Detailed Lesson Plans
 
@@ -145,7 +149,29 @@ Total: 20 sessions (adjust as needed for your class schedule)
 
 **Homework:** Design a simple poster for their favorite book or movie.
 
-### Lessons 15-17: Putting It All Together: The Main Application
+### Lessons 15-16: Integrating Multiple AI Models
+
+**Objective:** Understand and implement different AI models in the project.
+
+**Activities:**
+1. Introduce the concept of different AI models (Llama, GPT-4, Claude).
+2. Explain how to switch between models using environment variables.
+3. Compare and contrast the results from different models.
+
+**Homework:** Write a short report on the differences they noticed between AI models.
+
+### Lesson 17: Generating and Downloading PDFs
+
+**Objective:** Implement PDF generation and download functionality.
+
+**Activities:**
+1. Introduce the concept of generating reports from data.
+2. Implement the PDF generation using the `PDFGenerator` class.
+3. Add a download button to the web interface.
+
+**Homework:** Create a simple PDF report about their favorite story.
+
+### Lessons 18-20: Putting It All Together: The Main Application
 
 **Objective:** Integrate all agents into a cohesive web application.
 
@@ -157,7 +183,7 @@ Total: 20 sessions (adjust as needed for your class schedule)
 
 **Homework:** Sketch a design for an additional feature they'd like to see in the app.
 
-### Lessons 18-19: Testing and Debugging
+### Lessons 21-22: Testing and Debugging
 
 **Objective:** Ensure the application works correctly and handle errors.
 
@@ -168,7 +194,7 @@ Total: 20 sessions (adjust as needed for your class schedule)
 
 **Homework:** Write a test case for a specific function in the application.
 
-### Lesson 20: Final Project Showcase
+### Lesson 23: Final Project Showcase
 
 **Objective:** Celebrate student achievements and share their projects.
 
@@ -185,6 +211,7 @@ Total: 20 sessions (adjust as needed for your class schedule)
 - [AI for Kids](https://www.amazon.com/AI-Kids-Artificial-Intelligence-Project-Based/dp/1119696445)
 - [Flask Web Development](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world)
 - [Creative Writing Prompts for Kids](https://www.journalbuddies.com/prompts-by-grade/creative-writing-prompts-for-kids/)
+- [Introduction to AI Models for Kids](https://www.codeproject.com/Articles/5286790/Teaching-AI-to-Kids)
 
 ## 7. Troubleshooting Guide
 
@@ -195,6 +222,8 @@ Here are some common issues students might face and how to resolve them:
 3. **Dependencies not installing:** Check internet connection. Try running `poetry update`.
 4. **Application not starting:** Ensure all required environment variables are set in the `.env` file.
 5. **AI model not responding:** Check API keys and model names in the `.env` file.
+6. **PDF generation fails:** Make sure all required content is available before generating the PDF.
+7. **Slow response times:** Consider switching to a faster AI model or optimizing API calls.
 
 Remember, coding often involves troubleshooting. Encourage students to read error messages carefully and use them as clues to solve problems!
 
