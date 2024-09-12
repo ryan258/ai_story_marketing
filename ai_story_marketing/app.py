@@ -47,6 +47,10 @@ app.config['SESSION_COOKIE_NAME'] = 'ai_story_session'  # This is the name of ou
 # 🧠 Let's set up our new way to remember things!
 cache = FileSystemCache('/tmp/flask_session', threshold=500, default_timeout=60*60*24*7)
 
+# 📝 This function converts Markdown to HTML
+def convert_markdown_to_html(text):
+    return markdown.markdown(text)
+
 # This is our special way to remember things about each person using our app
 class CachingSessionInterface(SessionInterface):
     def open_session(self, app, request):
@@ -168,9 +172,13 @@ def evaluate():
     if not story or not evaluation:
         logger.warning("Story or evaluation missing from session in evaluate route")
         return jsonify({"error": "Oops! We lost your story. Let's start over!", "next": "/"})
-    
+
+    # Convert Markdown to HTML for story and evaluation feedback
+    story_html = convert_markdown_to_html(story)
+    evaluation['feedback'] = convert_markdown_to_html(evaluation['feedback'])   
+
     return render_template('evaluate.html', 
-                           story=story, 
+                           story=story_html, 
                            evaluation=evaluation, 
                            progress=session.get('progress', []))
 

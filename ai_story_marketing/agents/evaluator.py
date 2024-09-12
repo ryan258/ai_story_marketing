@@ -48,10 +48,17 @@ class Evaluator(BaseAgent):
 
         # Let's create a prompt for our AI to evaluate the story
         prompt = self.format_prompt(
-            "Evaluate the following story on a scale from 1 to 10, where 10 is excellent. "
-            "Provide a score and detailed feedback on how to improve the story. "
-            "Focus on elements like plot, characters, setting, and overall engagement. "
-            "Story: {story}",
+    "Evaluate the following story on a scale from 1 to 10, where 10 is excellent. "
+    "Provide a score and detailed feedback on how to improve the story. "
+    "In your evaluation, consider:\n"
+    "1. Plot: Is it clear, engaging, and well-structured?\n"
+    "2. Characters: Are they interesting, relatable, and well-developed?\n"
+    "3. Setting: Is it vividly described and appropriate for the story?\n"
+    "4. Theme: Is there a clear message or theme?\n"
+    "5. Writing style: Is it engaging and suitable for a young audience?\n"
+    "6. Marketing potential: Are there elements that could be used in marketing?\n"
+    "Provide specific suggestions for improvement in each area. "
+    "Story: {story}",
             story=story
         )
         

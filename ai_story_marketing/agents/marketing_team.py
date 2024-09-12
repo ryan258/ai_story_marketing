@@ -40,15 +40,23 @@ class MarketingTeam(BaseAgent):
         for material in self.marketing_materials.keys():
             # Let's create a prompt for our AI to generate concepts for each marketing material
             prompt = self.format_prompt(
-                "Create a concept for a {material} to promote the following story. "
-                "Target audience: {audience}. "
-                "Keep in mind these personas: {personas}. "
-                "Story summary: {story}",
-                material=material.replace('_', ' '),
-                audience=target_audience,
-                personas=", ".join(personas),
-                story=story[:200] + "..."  # We're using the first 200 characters as a summary
-            )
+    "Create an innovative concept for a {material} to promote the following story. "
+    "Your concept should:\n"
+    "1. Capture the essence and main themes of the story\n"
+    "2. Appeal to the target audience: {audience}\n"
+    "3. Resonate with these personas: {personas}\n"
+    "4. Be visually striking and memorable\n"
+    "5. Include a tagline or key message\n"
+    "6. Consider the appropriate tone and style for the story and audience\n"
+    "7. Incorporate key marketing elements identified earlier\n\n"
+    "Story summary: {story}\n\n"
+    "Provide a detailed description of your {material} concept, including visual elements, "
+    "copy, and the rationale behind your choices.",
+    material=material.replace('_', ' '),
+    audience=target_audience,
+    personas=", ".join(personas),
+    story=story[:250] + "..."
+)
             
             # Now, let's ask our AI to create the concept
             self.marketing_materials[material] = self.generate_text(prompt)

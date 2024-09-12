@@ -37,15 +37,21 @@ class SocialMediaTeam(BaseAgent):
         for platform in self.platforms:
             # Let's create a prompt for our AI to generate content for each platform
             prompt = self.format_prompt(
-                "Create a {platform} post to promote the following story. "
-                "Target audience: {audience}. "
-                "Keep in mind these personas: {personas}. "
-                "Story summary: {story}",
-                platform=platform,
-                audience=target_audience,
-                personas=", ".join(personas),
-                story=story[:100] + "..."  # We're using just the first 100 characters as a summary
-            )
+    "Create an engaging {platform} post to promote the following story. "
+    "Your post should:\n"
+    "1. Capture the essence of the story in a concise, intriguing way\n"
+    "2. Appeal to the target audience: {audience}\n"
+    "3. Resonate with these personas: {personas}\n"
+    "4. Include relevant hashtags and call-to-action\n"
+    "5. Adhere to {platform}'s best practices and character limits\n"
+    "6. Incorporate key marketing elements if possible\n\n"
+    "Story summary: {story}\n\n"
+    "Provide the post content and a brief explanation of your strategy.",
+    platform=platform,
+    audience=target_audience,
+    personas=", ".join(personas),
+    story=story[:150] + "..."
+)
             
             # Now, let's ask our AI to create the content
             self.content[platform] = self.generate_text(prompt)

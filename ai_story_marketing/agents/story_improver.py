@@ -14,13 +14,22 @@ class StoryImprover(BaseAgent):
         logger.debug(f"Improving story: {story[:50]}... with feedback: {feedback}")
         
         prompt = self.format_prompt(
-            "Improve the following story based on this feedback:\n\n"
-            "Feedback: {feedback}\n\n"
-            "Original Story: {story}\n\n"
-            "Please provide the full improved story, incorporating the feedback.",
-            feedback=feedback,
-            story=story
-        )
+    "Improve the following story based on the provided feedback. "
+    "Focus on enhancing these aspects:\n"
+    "1. Plot structure and pacing\n"
+    "2. Character development and relationships\n"
+    "3. Setting descriptions and world-building\n"
+    "4. Dialogue and character voices\n"
+    "5. Theme and message clarity\n"
+    "6. Overall engagement and readability for a young audience\n"
+    "7. Elements that could be used in marketing\n\n"
+    "Feedback: {feedback}\n\n"
+    "Original Story: {story}\n\n"
+    "Please provide the full improved story, incorporating the feedback "
+    "while maintaining the original essence and key plot points.",
+    feedback=feedback,
+    story=story
+)
 
         try:
             improved_story = self.generate_text(prompt)

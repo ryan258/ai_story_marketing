@@ -40,11 +40,17 @@ class StoryWriter(BaseAgent):
 
         # Let's create a prompt for our AI to write the story
         prompt = self.format_prompt(
-            "Write a short, engaging story based on this idea: {idea}. "
-            "Include interesting characters, a clear plot, and vivid descriptions. "
-            "The story should be at least 200 words long.",
-            idea=idea
-        )
+    "Create a captivating short story based on this idea: {idea}. "
+    "Your story should include:\n"
+    "1. Interesting and relatable characters\n"
+    "2. A clear plot with a beginning, middle, and end\n"
+    "3. Vivid descriptions that bring the story to life\n"
+    "4. A central theme or message\n"
+    "5. Engaging dialogue (if appropriate)\n"
+    "The story should be 300-500 words long and suitable for a young audience. "
+    "Remember to leave room for character growth and potential marketing opportunities.",
+    idea=idea
+)
 
         # Now, let's ask our AI to write the story
         try:

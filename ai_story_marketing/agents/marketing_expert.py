@@ -14,17 +14,27 @@ class MarketingExpert(BaseAgent):
 
     def process(self, story):
         prompt = self.format_prompt(
-            "Analyze the following story and create 3 marketing personas. "
-            "Also provide a brief description of the target audience. "
-            "Format your response as follows:\n"
-            "TARGET AUDIENCE: [Description of target audience]\n"
-            "PERSONAS:\n"
-            "1. [Persona 1 description]\n"
-            "2. [Persona 2 description]\n"
-            "3. [Persona 3 description]\n"
-            "Story: {story}",
-            story=story
-        )
+    "Analyze the following story and create a marketing strategy. "
+    "Your analysis should include:\n"
+    "1. A detailed description of the target audience (age range, interests, reading habits)\n"
+    "2. Three distinct marketing personas, each including:\n"
+    "   - Name, age, and occupation\n"
+    "   - Interests and hobbies\n"
+    "   - Reading preferences\n"
+    "   - How this story appeals to them\n"
+    "3. Key themes or elements from the story that could be used in marketing\n"
+    "4. Potential marketing channels (e.g., social media, schools, libraries)\n\n"
+    "Format your response as follows:\n"
+    "TARGET AUDIENCE: [Detailed description]\n"
+    "PERSONAS:\n"
+    "1. [Persona 1 description]\n"
+    "2. [Persona 2 description]\n"
+    "3. [Persona 3 description]\n"
+    "KEY MARKETING ELEMENTS: [List of elements]\n"
+    "POTENTIAL CHANNELS: [List of channels]\n\n"
+    "Story: {story}",
+    story=story
+)
         
         try:
             analysis = self.generate_text(prompt)
