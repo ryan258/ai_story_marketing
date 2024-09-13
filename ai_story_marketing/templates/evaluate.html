@@ -17,14 +17,13 @@
       <h2 class="text-2xl font-semibold mb-2 text-gray-700">Your Progress</h2>
       <!-- 📊 This is our cool progress bar -->
       <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-        <div
-          class="bg-blue-600 h-2.5 rounded-full"
-          style="width: {{ (progress|length / 5) * 100 }}%"
-        ></div>
+        <div class="bg-blue-600 h-2.5 rounded-full" style="width: {{ (progress|length / 6) * 100 }}%"></div>
       </div>
       <!-- ✅ This lists all the steps we've completed -->
-      {% for step in progress %} {% if step in progress %}✅{% else %}⏳{% endif
-      %} {{ step|replace('_', ' ')|title }} {% endfor %}
+      {% for step in ['story_creation', 'evaluation', 'marketing_analysis', 'social_media', 'marketing_concepts', 'result'] %}
+        {% if step in progress %}✅{% else %}⏳{% endif %} 
+        {{ step|replace('_', ' ')|title }}{% if not loop.last %} &rarr; {% endif %} 
+      {% endfor %}
     </div>
 
     <!-- 📖 This is where we show the story -->

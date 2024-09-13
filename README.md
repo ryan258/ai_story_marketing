@@ -1,5 +1,3 @@
-# 📁 File: README.md
-
 # 🚀 AI Story Creator and Marketing Helper
 
 Hey there, young storytellers! 👋 Welcome to our super cool AI Story Creator and Marketing Helper! This awesome project takes your amazing ideas and turns them into fantastic stories with the help of some friendly AI robots! 🤖✨
@@ -17,6 +15,9 @@ Hey there, young storytellers! 👋 Welcome to our super cool AI Story Creator a
 - 📊 Put all the cool stuff together in one place
 - 🧠 Use different smart AI brains to help (like Llama, GPT-4, and Claude)
 - 📄 Make a fancy PDF of your story and marketing plan
+- 🚀 Work super fast with special memory tricks (we call it caching!)
+- 🔧 Handle problems smoothly and keep track of what's happening
+- 👥 Work together with friends to create amazing stories (coming soon!)
 
 ## 🛠️ What We Used to Build It
 
@@ -29,6 +30,8 @@ Hey there, young storytellers! 👋 Welcome to our super cool AI Story Creator a
 - Special Language Helper: Python-Markdown (it makes computer words look nice) 📝
 - Secret Keeper: python-dotenv (it keeps our secrets safe) 🔐
 - PDF Maker: ReportLab (it turns our stories into fancy PDFs) 📄
+- Speed Booster: cachelib (it helps our app work super fast) ⚡
+- Problem Solver: logging (it helps us keep track of what's happening) 🔍
 
 ## 🏗️ How to Set It Up
 
@@ -39,7 +42,7 @@ Hey there, young storytellers! 👋 Welcome to our super cool AI Story Creator a
    ```
 3. Get our project from the internet:
    ```
-   git clone https://github.com/ryan258/ai-story-marketing.git
+   git clone https://github.com/your-username/ai-story-marketing.git
    cd ai-story-marketing
    ```
 4. Install all the tools we need:
@@ -121,6 +124,7 @@ ai_story_marketing/
 ├── poetry.lock
 ├── .env
 ├── README.md
+├── HANDBOOK.md
 ├── ai_story_marketing/
 │   ├── __init__.py
 │   ├── app.py
@@ -148,7 +152,8 @@ ai_story_marketing/
 │       ├── __init__.py
 │       ├── context_manager.py
 │       ├── output_generator.py
-│       └── pdf_generator.py
+│       ├── pdf_generator.py
+│       └── cache_manager.py
 └── tests/
     ├── __init__.py
     ├── test_app.py
@@ -160,7 +165,8 @@ ai_story_marketing/
     ├── test_progress_tracking.py
     ├── test_llama_model.py
     ├── test_gpt4_model.py
-    └── test_claude_model.py
+    ├── test_claude_model.py
+    └── test_cache_manager.py
 ```
 
 ## 👥 How to Help Make It Better
@@ -182,6 +188,10 @@ This project is free to use, change, and share under the MIT License. You can fi
 ## 🆘 Need Help?
 
 If you have any questions or run into any problems, just let us know by opening an "issue" on our GitHub page. We're here to help!
+
+## 🎓 For Teachers
+
+Check out our [HANDBOOK.md](HANDBOOK.md) for a teacher's guide on how to use this project in your classroom!
 
 ---
 
